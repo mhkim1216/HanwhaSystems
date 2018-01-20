@@ -1,0 +1,13 @@
+.table-view .column-header {
+    -fx-background-color: #a0cda0;
+
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #e1f1e1;
+}
+
+.table-row-cell:selected {
+	-fx-selection-bar: #0a826a;
+	-fx-background-color: #0a826a;
+}

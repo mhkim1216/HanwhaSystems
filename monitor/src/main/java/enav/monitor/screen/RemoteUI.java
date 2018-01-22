@@ -153,7 +153,7 @@ public class RemoteUI extends Application
 			e.printStackTrace();
 		}
 		List<Tab> tabs = new ArrayList<Tab>();
-		String[] tabLabel = new String[] { "Connection", "Database", "Graph" };
+		String[] tabLabel = new String[] { "Overview", "Analytics", "Remote-Fix" };
 		// Assign Layout Pane
 		Pane[] tabContent = new Pane[] { bPane, new FlowPane(), new FlowPane() };
 		DropShadow shadow = new DropShadow();
@@ -201,7 +201,7 @@ public class RemoteUI extends Application
 		titleLabel.setFont(new Font(18));
 		titleLabel.setPadding(new Insets(10));
 		FlowPane titleBar = new FlowPane();
-		FileInputStream fis;
+		FileInputStream fis=null;
 		Image titleImage;
 		ImageView imageView = null;
 		try
@@ -220,6 +220,19 @@ public class RemoteUI extends Application
 		catch (NullPointerException e)
 		{
 			e.printStackTrace();
+		}
+		finally
+		{
+			if(fis!=null)
+				try
+				{
+					fis.close();
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
 		Button exitButton = new Button("X");
 		InnerShadow innerShadow = new InnerShadow(13, Color.BLACK);
@@ -273,7 +286,7 @@ public class RemoteUI extends Application
 		bPane.setPadding(new Insets(5, 10, 0, 10));
 
 		VBox leftPane = new VBox();
-		leftPane.setPadding(new Insets(10, 0, 0, 10));
+		leftPane.setPadding(new Insets(10, 5, 0, 20));
 
 		Label serverInfo = new Label("[Server Info]");
 		serverInfo.setTextFill(Color.BURLYWOOD);
@@ -281,13 +294,13 @@ public class RemoteUI extends Application
 		serverInfo.setPadding(new Insets(0, 0, -23, 0));
 
 		Gauge summaryGauge = GaugeBuilder.create().skinType(SkinType.SIMPLE).decimals(2).maxValue(100).unit("%")
-				.title("HEALTH").maxWidth(180).foregroundBaseColor(Color.BURLYWOOD).build();
+				.title("USAGE").maxWidth(180).foregroundBaseColor(Color.BURLYWOOD).build();
 		summaryGauge.setNeedleColor(Color.DARKGOLDENROD);
 		summaryGauge.setValue(getEfficiency() * 100);
 		summaryGauge.setBarEffectEnabled(true);
 		summaryGauge.setAnimated(true);
 		summaryGauge.setAnimationDuration(2500);
-		summaryGauge.setPadding(new Insets(0, 0, 0, 10));
+		summaryGauge.setPadding(new Insets(0, 0, -20, 20));
 		
 		summaryGauge.setNeedleColor(Color.rgb(16, 55, 19));
 		summaryGauge.addSection(new Section(0, 10, Color.rgb(27,94,32)));
@@ -301,7 +314,69 @@ public class RemoteUI extends Application
 		summaryGauge.addSection(new Section(80, 90, Color.rgb(200,230,201)));
 		summaryGauge.addSection(new Section(90, 100, Color.rgb(232,245,233)));
 		
-		leftPane.getChildren().addAll(serverInfo, summaryGauge);
+		HBox opTitle = new HBox();
+		opTitle.setPadding(new Insets(0, 0, 10, 0));
+		
+		String opStatus=new String("IDLE");
+		Label opStatusLabel = new Label(opStatus);
+		opStatusLabel.setStyle("-fx-font-weight: bold;");
+		opStatusLabel.setFont(new Font(14));
+		
+		if(opStatus.equals("IDLE"))
+			opStatusLabel.setTextFill(Color.rgb(255, 235, 59));
+		else if(opStatus.equals("RUN"))
+			opStatusLabel.setTextFill(Color.rgb(76, 175, 80));
+		else	
+			opStatusLabel.setTextFill(Color.rgb(244, 67, 54));
+		
+		Label opInfo = new Label("[Operation] - ");
+		opInfo.setTextFill(Color.BURLYWOOD);
+		opInfo.setFont(new Font(14));
+		
+		opTitle.getChildren().addAll(opInfo, opStatusLabel);
+			
+		HBox errType = new HBox();
+		HBox errName = new HBox();
+		HBox errTime = new HBox();
+		
+		errType.setPadding(new Insets(0, 0, 10, 0));
+		errName.setPadding(new Insets(0, 0, 10, 0));
+		errTime.setPadding(new Insets(0, 0, 10, 0));
+		
+		Label errTypeLabel = new Label("· Err. Type");
+		errTypeLabel.setTextFill(Color.WHITE);
+		errTypeLabel.setMinWidth(Region.USE_COMPUTED_SIZE);
+		errTypeLabel.setPrefWidth(100);
+		errTypeLabel.setFont(new Font(14));
+		Label errNameLabel = new Label("· Err. Name");
+		errNameLabel.setTextFill(Color.WHITE);
+		errNameLabel.setMinWidth(Region.USE_COMPUTED_SIZE);
+		errNameLabel.setPrefWidth(100);
+		errNameLabel.setFont(new Font(14));
+		Label errTimeLabel = new Label("· Err. Time");
+		errTimeLabel.setTextFill(Color.WHITE);
+		errTimeLabel.setMinWidth(Region.USE_PREF_SIZE);
+		errTimeLabel.setPrefWidth(100);
+		errTimeLabel.setFont(new Font(14));
+		
+		TextField errTypeText = new TextField();
+		errTypeText.setStyle(textFieldStyle);
+		errTypeText.setPrefColumnCount(10);
+		errTypeText.setEditable(false);
+		TextField errNameText = new TextField();
+		errNameText.setStyle(textFieldStyle);
+		errNameText.setPrefColumnCount(10);
+		errNameText.setEditable(false);
+		TextField errTimeText = new TextField();
+		errTimeText.setStyle(textFieldStyle);
+		errTimeText.setPrefColumnCount(10);
+		errTimeText.setEditable(false);
+		
+		errType.getChildren().addAll(errTypeLabel, errTypeText);
+		errName.getChildren().addAll(errNameLabel, errNameText);
+		errTime.getChildren().addAll(errTimeLabel, errTimeText);
+		
+		leftPane.getChildren().addAll(serverInfo, summaryGauge, opTitle, errType, errName, errTime);
 		bPane.setLeft(leftPane);
 	}
 
@@ -313,7 +388,7 @@ public class RemoteUI extends Application
 	private void buildCenterPane()
 	{
 		VBox cPane = new VBox();
-		cPane.setPadding(new Insets(10, 30, 20, 45));
+		cPane.setPadding(new Insets(10, 20, 10, 25));
 
 		Label reqInfoLabel = new Label("[Request Information]");
 
@@ -420,13 +495,22 @@ public class RemoteUI extends Application
 		reqQueryText.setPrefRowCount(4);
 		reqQueryText.setEditable(false);
 
-		requestor.getChildren().addAll(reqLabel, reqText);
-		reqType.getChildren().addAll(reqTypeLabel, reqTypeText);
-		SVModule.getChildren().addAll(SVModuleLabel, SVModuleText);
-		reqParam.getChildren().addAll(paramLabel, paramText);
-		sessionID.getChildren().addAll(sIdLabel, sIdText);
-		sessionTime.getChildren().addAll(sTimeLabel, sTimeText);
-		tempSlot.getChildren().addAll(tempSlotLabel, tempSlotText);
+		Label[] ok=new Label[7];
+		for(int i=0;i<7;++i)
+		{
+			ok[i]=new Label("PASSED");
+			ok[i].setTranslateX(35);
+			ok[i].getStylesheets().add("/css/checkLabelBorder.css");
+		}
+		
+		
+		requestor.getChildren().addAll(reqLabel, reqText, ok[0]);
+		reqType.getChildren().addAll(reqTypeLabel, reqTypeText, ok[1]);
+		SVModule.getChildren().addAll(SVModuleLabel, SVModuleText, ok[2]);
+		reqParam.getChildren().addAll(paramLabel, paramText, ok[3]);
+		sessionID.getChildren().addAll(sIdLabel, sIdText, ok[4]);
+		sessionTime.getChildren().addAll(sTimeLabel, sTimeText, ok[5]);
+		tempSlot.getChildren().addAll(tempSlotLabel, tempSlotText, ok[6]);
 		reqQuery.getChildren().add(reqQueryLabel);
 
 		cPane.getChildren().addAll(reqInfoLabel, requestor, reqType, SVModule, reqParam, sessionID, sessionTime,
@@ -437,7 +521,7 @@ public class RemoteUI extends Application
 	private void buildRightPane()
 	{
 		VBox rightPane = new VBox();
-		rightPane.setPadding(new Insets(10, 20, 20, 20));
+		rightPane.setPadding(new Insets(10, 20, 20, 10));
 
 		Label logTitle = new Label("[Server Logs]");
 		logTitle.setTextFill(Color.BURLYWOOD);

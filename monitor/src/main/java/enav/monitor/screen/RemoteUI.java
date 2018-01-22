@@ -23,6 +23,7 @@ import org.hyperic.sigar.SigarException;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.Gauge.SkinType;
 import eu.hansolo.medusa.GaugeBuilder;
+import eu.hansolo.medusa.Section;
 
 import javafx.application.*;
 import javafx.beans.binding.Bindings;
@@ -54,12 +55,31 @@ public class RemoteUI extends Application
 	private BorderPane bPane;
 	private VBox rPane;
 	private Scene scene;
-	
 	private Thread timeThread;
-	
-	private static String rootColor = "#1b221b";
-	String textFieldStyle="-fx-effect: innershadow(three-pass-box, gray, 5, 0.3, 1, 1);-fx-background-color:#e6efe3;";
-	
+	private String rootColor = "#1b221b";
+	private String textFieldStyle = "-fx-background-color:black;-fx-effect: innershadow(three-pass-box, #616161, 7, 0, 1, 1);";
+	private double ramTotal;
+	private double ramUsed;
+	private double cpuTotal;
+	private double cpuUsed;
+	private double diskTotal;
+	private double diskUsed;
+	private double netTotal;
+	private double netUsed;
+	private double efficiency;
+
+	public RemoteUI()
+	{
+		ramTotal = getRamStatus("total");
+		ramUsed = getRamStatus("used");
+		cpuTotal = 1.0;
+		cpuUsed = getCpuStatus();
+		diskTotal = getDiskStatus("total");
+		diskUsed = getDiskStatus("used");
+		netTotal = 1000.0;
+		netUsed = getAllBounds();
+	}
+
 	public static void main(String[] args)
 	{
 		launch(args);
@@ -248,94 +268,41 @@ public class RemoteUI extends Application
 	private void buildLeftPane()
 	{
 		bPane = new BorderPane();
-		bPane.setMinWidth(1225);
-		bPane.setMinHeight(543);
-		VBox lPane = new VBox();
-		lPane.setPadding(new Insets(10, 20, 20, 20));
-		Label reqInfoLabel = new Label("[Request Information]");
-		
-		HBox requestor = new HBox();
-		HBox reqType = new HBox();
-		HBox SVModule = new HBox();
-		HBox reqParam = new HBox();
-		HBox sessionID = new HBox();
-		HBox sessionTime=new HBox();
-		
-		reqInfoLabel.setPadding(new Insets(0, 0, 10, 0));
-		requestor.setPadding(new Insets(0, 0, 10, 0));
-		SVModule.setPadding(new Insets(0, 0, 10, 0));
-		reqParam.setPadding(new Insets(0, 0, 10, 0));
-		reqType.setPadding(new Insets(0, 0, 10, 0));
-		sessionID.setPadding(new Insets(0, 0, 10, 0));
-		sessionTime.setPadding(new Insets(0, 0, 10, 0));
-		
-		reqInfoLabel.setTextFill(Color.BURLYWOOD);
-		reqInfoLabel.setFont(new Font(14));
+		bPane.setMaxWidth(1225);
+		bPane.setMinHeight(637);
+		bPane.setPadding(new Insets(5, 10, 0, 10));
 
-		Label reqLabel = new Label("Requestor");
-		reqLabel.setTextFill(Color.WHITE);
-		reqLabel.setMinWidth(Region.USE_COMPUTED_SIZE);
-		reqLabel.setPrefWidth(140);
-		reqLabel.setFont(new Font(14));
+		VBox leftPane = new VBox();
+		leftPane.setPadding(new Insets(10, 0, 0, 10));
 
-		Label reqTypeLabel = new Label("Request Type");
-		reqTypeLabel.setTextFill(Color.WHITE);
-		reqTypeLabel.setMinWidth(Region.USE_COMPUTED_SIZE);
-		reqTypeLabel.setPrefWidth(140);
-		reqTypeLabel.setFont(new Font(14));
+		Label serverInfo = new Label("[Server Info]");
+		serverInfo.setTextFill(Color.BURLYWOOD);
+		serverInfo.setFont(new Font(14));
+		serverInfo.setPadding(new Insets(0, 0, -23, 0));
 
-		Label SVModuleLabel = new Label("Service Module");
-		SVModuleLabel.setTextFill(Color.WHITE);
-		SVModuleLabel.setMinWidth(Region.USE_PREF_SIZE);
-		SVModuleLabel.setPrefWidth(140);
-		SVModuleLabel.setFont(new Font(14));
-
-		Label paramLabel = new Label("Parameter");
-		paramLabel.setTextFill(Color.WHITE);
-		paramLabel.setMinWidth(Region.USE_PREF_SIZE);
-		paramLabel.setPrefWidth(140);
-		paramLabel.setFont(new Font(14));
+		Gauge summaryGauge = GaugeBuilder.create().skinType(SkinType.SIMPLE).decimals(2).maxValue(100).unit("%")
+				.title("HEALTH").maxWidth(180).foregroundBaseColor(Color.BURLYWOOD).build();
+		summaryGauge.setNeedleColor(Color.DARKGOLDENROD);
+		summaryGauge.setValue(getEfficiency() * 100);
+		summaryGauge.setBarEffectEnabled(true);
+		summaryGauge.setAnimated(true);
+		summaryGauge.setAnimationDuration(2500);
+		summaryGauge.setPadding(new Insets(0, 0, 0, 10));
 		
-		Label sIdLabel = new Label("Session ID");
-		sIdLabel.setTextFill(Color.WHITE);
-		sIdLabel.setMinWidth(Region.USE_PREF_SIZE);
-		sIdLabel.setPrefWidth(140);
-		sIdLabel.setFont(new Font(14));
-
-		Label sTimeLabel = new Label("Session Time");
-		sTimeLabel.setTextFill(Color.WHITE);
-		sTimeLabel.setMinWidth(Region.USE_PREF_SIZE);
-		sTimeLabel.setPrefWidth(140);
-		sTimeLabel.setFont(new Font(14));
+		summaryGauge.setNeedleColor(Color.rgb(16, 55, 19));
+		summaryGauge.addSection(new Section(0, 10, Color.rgb(27,94,32)));
+		summaryGauge.addSection(new Section(10, 20, Color.rgb(46,125,50)));
+		summaryGauge.addSection(new Section(20, 30, Color.rgb(56,142,60)));
+		summaryGauge.addSection(new Section(30, 40, Color.rgb(67,160,71)));
+		summaryGauge.addSection(new Section(40, 50, Color.rgb(76,175,80)));
+		summaryGauge.addSection(new Section(50, 60, Color.rgb(102,187,106)));
+		summaryGauge.addSection(new Section(60, 70, Color.rgb(129,199,132)));
+		summaryGauge.addSection(new Section(70, 80, Color.rgb(165,214,167)));
+		summaryGauge.addSection(new Section(80, 90, Color.rgb(200,230,201)));
+		summaryGauge.addSection(new Section(90, 100, Color.rgb(232,245,233)));
 		
-		TextField reqText = new TextField();
-		reqText.setStyle(textFieldStyle);
-		reqText.setEditable(false);
-		TextField reqTypeText = new TextField();
-		reqTypeText.setStyle(textFieldStyle);
-		reqTypeText.setEditable(false);
-		TextField SVModuleText = new TextField();
-		SVModuleText.setStyle(textFieldStyle);
-		SVModuleText.setEditable(false);
-		TextField paramText = new TextField();
-		paramText.setStyle(textFieldStyle);
-		paramText.setEditable(false);
-		TextField sIdText = new TextField();
-		sIdText.setStyle(textFieldStyle);
-		sIdText.setEditable(false);
-		TextField sTimeText = new TextField();
-		sTimeText.setStyle(textFieldStyle);
-		sTimeText.setEditable(false);
-
-		requestor.getChildren().addAll(reqLabel, reqText);
-		reqType.getChildren().addAll(reqTypeLabel, reqTypeText);
-		SVModule.getChildren().addAll(SVModuleLabel, SVModuleText);
-		reqParam.getChildren().addAll(paramLabel, paramText);
-		sessionID.getChildren().addAll(sIdLabel, sIdText);
-		sessionTime.getChildren().addAll(sTimeLabel, sTimeText);
-		
-		lPane.getChildren().addAll(reqInfoLabel, requestor, reqType, SVModule, reqParam, sessionID, sessionTime);
-		bPane.setLeft(lPane);
+		leftPane.getChildren().addAll(serverInfo, summaryGauge);
+		bPane.setLeft(leftPane);
 	}
 
 	private void buildTopPane()
@@ -345,7 +312,126 @@ public class RemoteUI extends Application
 
 	private void buildCenterPane()
 	{
+		VBox cPane = new VBox();
+		cPane.setPadding(new Insets(10, 30, 20, 45));
 
+		Label reqInfoLabel = new Label("[Request Information]");
+
+		HBox requestor = new HBox();
+		HBox reqType = new HBox();
+		HBox SVModule = new HBox();
+		HBox reqParam = new HBox();
+		HBox sessionID = new HBox();
+		HBox sessionTime = new HBox();
+		HBox tempSlot = new HBox();
+		HBox reqQuery = new HBox();
+
+		reqInfoLabel.setPadding(new Insets(0, 0, 10, 0));
+		requestor.setPadding(new Insets(0, 0, 10, 0));
+		SVModule.setPadding(new Insets(0, 0, 10, 0));
+		reqParam.setPadding(new Insets(0, 0, 10, 0));
+		reqType.setPadding(new Insets(0, 0, 10, 0));
+		sessionID.setPadding(new Insets(0, 0, 10, 0));
+		sessionTime.setPadding(new Insets(0, 0, 10, 0));
+		tempSlot.setPadding(new Insets(0, 0, 10, 0));
+		reqQuery.setPadding(new Insets(0, 0, 13, 0));
+
+		reqInfoLabel.setTextFill(Color.BURLYWOOD);
+		reqInfoLabel.setFont(new Font(14));
+
+		Label reqLabel = new Label("· Requestor");
+		reqLabel.setTextFill(Color.WHITE);
+		reqLabel.setMinWidth(Region.USE_COMPUTED_SIZE);
+		reqLabel.setPrefWidth(140);
+		reqLabel.setFont(new Font(14));
+
+		Label reqTypeLabel = new Label("· Request Type");
+		reqTypeLabel.setTextFill(Color.WHITE);
+		reqTypeLabel.setMinWidth(Region.USE_COMPUTED_SIZE);
+		reqTypeLabel.setPrefWidth(140);
+		reqTypeLabel.setFont(new Font(14));
+
+		Label SVModuleLabel = new Label("· Service Module");
+		SVModuleLabel.setTextFill(Color.WHITE);
+		SVModuleLabel.setMinWidth(Region.USE_PREF_SIZE);
+		SVModuleLabel.setPrefWidth(140);
+		SVModuleLabel.setFont(new Font(14));
+
+		Label paramLabel = new Label("· Parameter");
+		paramLabel.setTextFill(Color.WHITE);
+		paramLabel.setMinWidth(Region.USE_PREF_SIZE);
+		paramLabel.setPrefWidth(140);
+		paramLabel.setFont(new Font(14));
+
+		Label sIdLabel = new Label("· Session ID");
+		sIdLabel.setTextFill(Color.WHITE);
+		sIdLabel.setMinWidth(Region.USE_PREF_SIZE);
+		sIdLabel.setPrefWidth(140);
+		sIdLabel.setFont(new Font(14));
+
+		Label sTimeLabel = new Label("· Session Time");
+		sTimeLabel.setTextFill(Color.WHITE);
+		sTimeLabel.setMinWidth(Region.USE_PREF_SIZE);
+		sTimeLabel.setPrefWidth(140);
+		sTimeLabel.setFont(new Font(14));
+
+		Label tempSlotLabel = new Label("· Temporary Slot");
+		tempSlotLabel.setTextFill(Color.WHITE);
+		tempSlotLabel.setMinWidth(Region.USE_PREF_SIZE);
+		tempSlotLabel.setPrefWidth(140);
+		tempSlotLabel.setFont(new Font(14));
+
+		Label reqQueryLabel = new Label("· Request Query (PostgreSQL)");
+		reqQueryLabel.setTextFill(Color.WHITE);
+		reqQueryLabel.setMinWidth(Region.USE_PREF_SIZE);
+		reqQueryLabel.setPrefWidth(200);
+		reqQueryLabel.setFont(new Font(14));
+
+		TextField reqText = new TextField();
+		reqText.setStyle(textFieldStyle);
+		reqText.setPrefColumnCount(16);
+		reqText.setEditable(false);
+		TextField reqTypeText = new TextField();
+		reqTypeText.setStyle(textFieldStyle);
+		reqTypeText.setPrefColumnCount(16);
+		reqTypeText.setEditable(false);
+		TextField SVModuleText = new TextField();
+		SVModuleText.setStyle(textFieldStyle);
+		SVModuleText.setPrefColumnCount(16);
+		SVModuleText.setEditable(false);
+		TextField paramText = new TextField();
+		paramText.setStyle(textFieldStyle);
+		paramText.setPrefColumnCount(16);
+		paramText.setEditable(false);
+		TextField sIdText = new TextField();
+		sIdText.setStyle(textFieldStyle);
+		sIdText.setPrefColumnCount(16);
+		sIdText.setEditable(false);
+		TextField sTimeText = new TextField();
+		sTimeText.setStyle(textFieldStyle);
+		sTimeText.setPrefColumnCount(16);
+		sTimeText.setEditable(false);
+		TextField tempSlotText = new TextField();
+		tempSlotText.setStyle(textFieldStyle);
+		tempSlotText.setPrefColumnCount(16);
+		tempSlotText.setEditable(false);
+		TextArea reqQueryText = new TextArea();
+		reqQueryText.getStylesheets().add("/css/TextArea.css");
+		reqQueryText.setPrefRowCount(4);
+		reqQueryText.setEditable(false);
+
+		requestor.getChildren().addAll(reqLabel, reqText);
+		reqType.getChildren().addAll(reqTypeLabel, reqTypeText);
+		SVModule.getChildren().addAll(SVModuleLabel, SVModuleText);
+		reqParam.getChildren().addAll(paramLabel, paramText);
+		sessionID.getChildren().addAll(sIdLabel, sIdText);
+		sessionTime.getChildren().addAll(sTimeLabel, sTimeText);
+		tempSlot.getChildren().addAll(tempSlotLabel, tempSlotText);
+		reqQuery.getChildren().add(reqQueryLabel);
+
+		cPane.getChildren().addAll(reqInfoLabel, requestor, reqType, SVModule, reqParam, sessionID, sessionTime,
+				tempSlot, reqQuery, reqQueryText);
+		bPane.setCenter(cPane);
 	}
 
 	private void buildRightPane()
@@ -358,9 +444,8 @@ public class RemoteUI extends Application
 		logTitle.setFont(new Font(14));
 		logTitle.setPadding(new Insets(0, 0, 13, 0));
 		TextArea logArea = new TextArea();
-		logArea.setStyle(textFieldStyle);
+		logArea.getStylesheets().add("/css/TextArea.css");
 		logArea.setPrefRowCount(10);
-		logArea.setEditable(false);
 
 		Label statusTitle = new Label("[Server Status]");
 		statusTitle.setTextFill(Color.BURLYWOOD);
@@ -371,32 +456,28 @@ public class RemoteUI extends Application
 		SVInfoPane.setPadding(new Insets(0, 10, 0, 0));
 		// Adding RAM usage of a server
 
-		Gauge ramGauge = GaugeBuilder.create().skinType(SkinType.SLIM).decimals(0)
-				.maxValue(getRamStatus("total") / 1000000).unit("MBYTE").title("USED").build();
+		Gauge ramGauge = GaugeBuilder.create().skinType(SkinType.SLIM).decimals(0).maxValue(ramTotal / 1000000)
+				.unit("MBYTE").title("USED").build();
 
 		// Adding CPU usage of a server
 
-		Gauge cpuGauge = GaugeBuilder.create().skinType(SkinType.SLIM).decimals(2).maxValue(100).unit("%")
+		Gauge cpuGauge = GaugeBuilder.create().skinType(SkinType.SLIM).decimals(2).maxValue(cpuTotal * 100).unit("%")
 				.title("AVERAGE").build();
 
 		// Adding DISK usage of a server
 
-		Gauge diskGauge = GaugeBuilder.create().skinType(SkinType.SLIM).decimals(0)
-				.maxValue(getDiskStatus("total") / 1000000).title("USED").unit("GBYTE").build();
+		Gauge diskGauge = GaugeBuilder.create().skinType(SkinType.SLIM).decimals(0).maxValue(diskTotal / 1000000)
+				.title("USED").unit("GBYTE").build();
 
 		// Adding network In/Out bound counts of a server
 
-		Gauge netGauge = GaugeBuilder.create().skinType(SkinType.SLIM).decimals(0).maxValue(999).unit("BOUNDS")
+		Gauge netGauge = GaugeBuilder.create().skinType(SkinType.SLIM).decimals(0).maxValue(netTotal).unit("BOUNDS")
 				.title("IN/OUT").build();
 
-		// StackPane bounds = new StackPane(barChart);
-
-		SVInfoPane.getChildren()
-				.add(getGauge("RAM USAGE", Color.rgb(255, 183, 77), ramGauge, getRamStatus("used") / 100000));
-		SVInfoPane.getChildren().add(getGauge("CPU LOAD", Color.rgb(229, 115, 115), cpuGauge, getCpuStatus() * 100));
-		SVInfoPane.getChildren()
-				.add(getGauge("DISK USAGE", Color.rgb(0, 188, 212), diskGauge, getDiskStatus("used") / 1000000));
-		SVInfoPane.getChildren().add(getGauge("NET TRAFFIC", Color.rgb(76, 175, 80), netGauge, getAllBounds()));
+		SVInfoPane.getChildren().add(getGauge("RAM USAGE", Color.rgb(255, 183, 77), ramGauge, ramUsed / 100000));
+		SVInfoPane.getChildren().add(getGauge("CPU LOAD", Color.rgb(229, 115, 115), cpuGauge, cpuUsed * 100));
+		SVInfoPane.getChildren().add(getGauge("DISK USAGE", Color.rgb(0, 188, 212), diskGauge, diskUsed / 1000000));
+		SVInfoPane.getChildren().add(getGauge("NET TRAFFIC", Color.rgb(76, 175, 80), netGauge, netUsed));
 		rightPane.getChildren().addAll(logTitle, logArea, statusTitle, SVInfoPane);
 
 		bPane.setRight(rightPane);
@@ -440,16 +521,15 @@ public class RemoteUI extends Application
 		Label bottomTitle = new Label("[Server Response Message]");
 		bottomTitle.setTextFill(Color.BURLYWOOD);
 		bottomTitle.setFont(new Font(14));
-		bottomTitle.setPadding(new Insets(0, 0, 10, 0));
+		bottomTitle.setPadding(new Insets(0, 0, 0, 0));
 		// bottomTitle.setMinWidth(1225);
 		// bottomTitle.setAlignment(Pos.CENTER);
 
 		StackPane sPane = new StackPane();
-		sPane.setPadding(new Insets(0, 0, 10, 0));
 		sPane.getChildren().add(resultSet);
 		Label time = new Label();
 		time.setTextFill(Color.BURLYWOOD);
-		time.setPadding(new Insets(0, 0, 10, 961));
+		time.setPadding(new Insets(0, 0, 10, 941));
 		class TimeThread extends Thread
 		{
 			Label time;
@@ -487,7 +567,7 @@ public class RemoteUI extends Application
 		timeThread = new TimeThread(time);
 		timeThread.start();
 
-		VBox bottom = new VBox();
+		VBox bottom = new VBox(10);
 		bottom.setPadding(new Insets(0, 20, 0, 20));
 		bottom.getChildren().addAll(bottomTitle, sPane, time);
 
@@ -511,17 +591,15 @@ public class RemoteUI extends Application
 		}
 
 		if (type.equals("total"))
-		{
 			result = mem.getActualFree();
-			return result;
-		}
+
 		else if (type.equals("used"))
-		{
 			result = mem.getActualUsed();
-			return result;
-		}
+
 		else
-			return 0l;
+			result = 0l;
+
+		return result;
 
 	}
 
@@ -578,11 +656,11 @@ public class RemoteUI extends Application
 	private int getAllBounds()
 	{
 		Sigar sigar = new Sigar();
-		int result=0;
+		int result = 0;
 
 		try
 		{
-			result = sigar.getNetStat().getTcpOutboundTotal()+sigar.getNetStat().getTcpInboundTotal();
+			result = sigar.getNetStat().getTcpOutboundTotal() + sigar.getNetStat().getTcpInboundTotal();
 		}
 		catch (SigarException e)
 		{
@@ -591,6 +669,13 @@ public class RemoteUI extends Application
 		}
 
 		return result;
+	}
+
+	private double getEfficiency()
+	{
+		efficiency = (ramUsed / ramTotal + cpuUsed / cpuTotal + diskUsed / diskTotal + netUsed / netTotal) / 4;
+
+		return efficiency;
 	}
 
 	private VBox getGauge(final String text, final Color color, final Gauge gauge, double value)
@@ -609,13 +694,14 @@ public class RemoteUI extends Application
 		gauge.setBarColor(color);
 		gauge.setBarBackgroundColor(Color.rgb(75, 75, 75));
 		gauge.setAnimated(true);
-		gauge.setAnimationDuration(1000);
+		gauge.setAnimationDuration(2500);
 		gauge.setPrefSize(100, 100);
 		gauge.setValue(value);
 
 		VBox vBox = new VBox(bar, label, gauge);
 		vBox.setSpacing(1);
 		vBox.setAlignment(Pos.CENTER);
+
 		return vBox;
 	}
 }

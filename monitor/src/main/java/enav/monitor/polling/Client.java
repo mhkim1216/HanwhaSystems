@@ -15,30 +15,37 @@ public class Client
 {
 	private boolean isRunning;
 	private String name;
-
 	private String initTime;
 	private String lastTime;
 	private String usingTime;
-	private static int usingCount;
+	private int usingCount;
 	private static List<Trace> logTrace;
+
+	public static String initCommon;
+	public static String lastCommon;
+
+	public Client()
+	{
+		// nothing to do
+	}
 
 	public Client(String name, String initTime, String lastTime)
 	{
-		this.isRunning = false;
+		this.isRunning = true;
 
-		if (name == null)
+		if (this.name == null)
 			this.name = name;
-		if (initTime == null)
+		if (this.initTime == null)
 			this.initTime = initTime;
-		if (lastTime == null)
+		if (this.lastTime == null)
 			this.lastTime = lastTime;
 
-		//add usingTime calculation
-		
+		this.usingTime = getUsingTime();
+
 		if (logTrace == null)
 			logTrace = new ArrayList<Trace>();
-			
-		//add each client's trace
+
+		// add each client's trace
 
 	}
 
@@ -64,6 +71,7 @@ public class Client
 
 	public String getUsingTime()
 	{
+		usingTime=calculateUsingTime(initTime, lastTime);
 		return usingTime;
 	}
 
@@ -77,9 +85,9 @@ public class Client
 		return usingCount;
 	}
 
-	public void setUsingCount(int usingCount)
+	public void increaseUsingCount()
 	{
-		this.usingCount = usingCount;
+		++usingCount;
 	}
 
 	public String getName()
@@ -104,7 +112,20 @@ public class Client
 
 	public void addTrace(int num, String time, String query, boolean result)
 	{
- 
+
 		logTrace.add(new Trace(num, time, query, result));
+	}
+
+	public void update(String lastTime)
+	{
+		this.lastTime = lastTime;
+		this.usingTime = calculateUsingTime(initTime, lastTime);
+		// ++(this.usingCount);
+	}
+
+	private String calculateUsingTime(String init, String last)
+	{
+		// make algorithm to calculate usingTime
+		return "temp_time";
 	}
 }

@@ -14,48 +14,76 @@ import java.util.Map;
 import enav.monitor.screen.ErrorTrace;
 import enav.monitor.screen.History;
 import enav.monitor.screen.LogTrace;
+import enav.monitor.screen.RemoteUI;
 
 public class PollingManager
 {
 	private static PollingManager manager;
-	private Map<String, Client>client;
 	
+	// managing clients list in history tab.
+	private Map<String, Client> clients;
+
+
+	private RemoteUI rmt;
 	private History his;
 	private LogTrace log;
 	private ErrorTrace err;
-	
-	private PollingManager(History his, LogTrace log, ErrorTrace err)
+
+	private PollingManager(RemoteUI rmt, History his, LogTrace log, ErrorTrace err)
 	{
-		this.his=his;
-		this.log=log;
-		this.err=err;
-		this.client=new HashMap<String, Client>();
+		this.rmt = rmt;
+		this.his = his;
+		this.log = log;
+		this.err = err;
+		this.clients = new HashMap<String, Client>();
 	}
-	
-	public static PollingManager getInstance(History his, LogTrace log, ErrorTrace err)
+
+	public static PollingManager getInstance(RemoteUI rmt, History his, LogTrace log, ErrorTrace err)
 	{
-		if(manager==null)
-			return (new PollingManager(his, log, err));
+		if (manager == null)
+			return (new PollingManager(rmt, his, log, err));
 		else
 			return manager;
 	}
+
+	public void monitor()
+	{
+		// what manager thread has to do
+		// set Client.name, Client.initTime, Client.lastTime...etc.
+		Client.initCommon="2018-01-24 10:23:53";
+		Client.lastCommon="2018-01-24 11:09:27";
+		
+		//test code. Request Row-Pane in History tab.
+		test("client1");
+		test("client1");
+		test("client2");
+		test("client3");
+		test("client4");
+		test("client4");
+	}
 	
-	//if new session is created(manager thread is interrupted)
+	// if new session is created(manager thread is interrupted)
 	public void test(String name)
 	{
 		his.addClient(getClient(name));
 	}
-	
+
 	private Client getClient(String name)
 	{
-		if(client.containsKey(name))
-			return client.get(name);
+		// at least two times
+		if (clients.containsKey(name))
+		{
+			Client client=clients.get(name);
+			client.update(Client.lastCommon);
+			return client;
+		}
+		
+		// at first time
 		else
 		{
-			client.put(name, new Client(name, "init_time", "last_time"));
-			return client.get(name);
+			clients.put(name, new Client(name, Client.initCommon, Client.lastCommon));
+			return clients.get(name);
 		}
 	}
-	
-	
+
 }

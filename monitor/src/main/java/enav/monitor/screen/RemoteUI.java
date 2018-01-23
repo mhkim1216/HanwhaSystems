@@ -59,7 +59,6 @@ public class RemoteUI extends Application
 	private Scene scene;
 	private Thread timeThread;
 	private String rootColor = "#1b221b";
-	private String textFieldStyle = "-fx-background-color:black;-fx-effect: innershadow(three-pass-box, #616161, 7, 0, 1, 1);";
 	private double ramTotal;
 	private double ramUsed;
 	private double cpuTotal;
@@ -113,17 +112,9 @@ public class RemoteUI extends Application
 		setScene();
 		setStage(primaryStage);
 		
-		manager=PollingManager.getInstance(history, logTrace, errorTrace);
+		manager=PollingManager.getInstance(this, history, logTrace, errorTrace);
 		//add codes for running manager's thread in background
-		
-		//test code
-		manager.test("client1");
-		manager.test("client1");
-		manager.test("client2");
-		manager.test("client3");
-		manager.test("client4");
-		manager.test("client4");
-		
+		manager.monitor();	
 	}
 
 	@Override
@@ -390,15 +381,15 @@ public class RemoteUI extends Application
 		errTimeLabel.setFont(new Font(14));
 		
 		TextField errTypeText = new TextField();
-		errTypeText.setStyle(textFieldStyle);
+		errTypeText.getStylesheets().add("/css/TextField.css");
 		errTypeText.setPrefColumnCount(10);
 		errTypeText.setEditable(false);
 		TextField errNameText = new TextField();
-		errNameText.setStyle(textFieldStyle);
+		errNameText.getStylesheets().add("/css/TextField.css");
 		errNameText.setPrefColumnCount(10);
 		errNameText.setEditable(false);
 		TextField errTimeText = new TextField();
-		errTimeText.setStyle(textFieldStyle);
+		errTimeText.getStylesheets().add("/css/TextField.css");
 		errTimeText.setPrefColumnCount(10);
 		errTimeText.setEditable(false);
 		
@@ -493,31 +484,31 @@ public class RemoteUI extends Application
 		reqQueryLabel.setFont(new Font(14));
 
 		TextField reqText = new TextField();
-		reqText.setStyle(textFieldStyle);
+		reqText.getStylesheets().add("/css/TextField.css");
 		reqText.setPrefColumnCount(16);
 		reqText.setEditable(false);
 		TextField reqTypeText = new TextField();
-		reqTypeText.setStyle(textFieldStyle);
+		reqTypeText.getStylesheets().add("/css/TextField.css");
 		reqTypeText.setPrefColumnCount(16);
 		reqTypeText.setEditable(false);
 		TextField SVModuleText = new TextField();
-		SVModuleText.setStyle(textFieldStyle);
+		SVModuleText.getStylesheets().add("/css/TextField.css");
 		SVModuleText.setPrefColumnCount(16);
 		SVModuleText.setEditable(false);
 		TextField paramText = new TextField();
-		paramText.setStyle(textFieldStyle);
+		paramText.getStylesheets().add("/css/TextField.css");
 		paramText.setPrefColumnCount(16);
 		paramText.setEditable(false);
 		TextField sIdText = new TextField();
-		sIdText.setStyle(textFieldStyle);
+		sIdText.getStylesheets().add("/css/TextField.css");
 		sIdText.setPrefColumnCount(16);
 		sIdText.setEditable(false);
 		TextField sTimeText = new TextField();
-		sTimeText.setStyle(textFieldStyle);
+		sTimeText.getStylesheets().add("/css/TextField.css");
 		sTimeText.setPrefColumnCount(16);
 		sTimeText.setEditable(false);
 		TextField tempSlotText = new TextField();
-		tempSlotText.setStyle(textFieldStyle);
+		tempSlotText.getStylesheets().add("/css/TextField.css");
 		tempSlotText.setPrefColumnCount(16);
 		tempSlotText.setEditable(false);
 		TextArea reqQueryText = new TextArea();

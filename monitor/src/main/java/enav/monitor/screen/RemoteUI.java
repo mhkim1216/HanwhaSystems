@@ -1,6 +1,7 @@
 /**
  * Created 01.02.2018.
- * Layout for remote screen has been built using JavaFX.
+ * Last Modified 01.23.2018.
+ * Layout for overview screen has been built using JavaFX.
  * 
  * 
  */
@@ -20,6 +21,7 @@ import org.hyperic.sigar.Mem;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 
+import enav.monitor.polling.PollingManager;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.Gauge.SkinType;
 import eu.hansolo.medusa.GaugeBuilder;
@@ -67,6 +69,15 @@ public class RemoteUI extends Application
 	private double netTotal;
 	private double netUsed;
 	private double efficiency;
+	private PollingManager manager;
+	private Pane hPane;
+	private Pane logPane;
+	private Pane errPane;
+	private History history;
+	private LogTrace logTrace;
+	private ErrorTrace errorTrace;
+	
+	private String serverIp;
 
 	public RemoteUI()
 	{
@@ -78,6 +89,7 @@ public class RemoteUI extends Application
 		diskUsed = getDiskStatus("used");
 		netTotal = 1000.0;
 		netUsed = getAllBounds();
+		serverIp="Not Connected";
 	}
 
 	public static void main(String[] args)
@@ -100,6 +112,18 @@ public class RemoteUI extends Application
 		setRootPane();
 		setScene();
 		setStage(primaryStage);
+		
+		manager=PollingManager.getInstance(history, logTrace, errorTrace);
+		//add codes for running manager's thread in background
+		
+		//test code
+		manager.test("client1");
+		manager.test("client1");
+		manager.test("client2");
+		manager.test("client3");
+		manager.test("client4");
+		manager.test("client4");
+		
 	}
 
 	@Override
@@ -136,6 +160,11 @@ public class RemoteUI extends Application
 
 	private void setTabPane()
 	{
+		// create another tabs
+		hPane=getHistory();
+		logPane=getLogTrace();
+		errPane=getErrorTrace();
+		
 		try
 		{
 			/* Applied FXML & CSS */
@@ -153,14 +182,15 @@ public class RemoteUI extends Application
 			e.printStackTrace();
 		}
 		List<Tab> tabs = new ArrayList<Tab>();
-		String[] tabLabel = new String[] { "Overview", "Analytics", "Remote-Fix" };
+		String[] tabLabel = new String[] { "Overview", "History", "Log Trace", "Error Trace" };
 		// Assign Layout Pane
-		Pane[] tabContent = new Pane[] { bPane, new FlowPane(), new FlowPane() };
+		Pane[] tabContent = new Pane[] { bPane, hPane, logPane, errPane };
 		DropShadow shadow = new DropShadow();
 		shadow.setColor(Color.BLACK);
 		shadow.setOffsetX(4.0);
 		shadow.setOffsetY(4.0);
 		shadow.setRadius(10);
+		
 		for (int i = 0; i < tabLabel.length; ++i)
 		{
 			Tab tab = new Tab(tabLabel[i]);
@@ -196,7 +226,7 @@ public class RemoteUI extends Application
 			menus.add(menu);
 		}
 		menuBar.getMenus().addAll(menus);
-		Label titleLabel = new Label("e-Navigation DSP Monitor 0.1 ");
+		Label titleLabel = new Label("Remote Diagnostic System 0.1 ");
 		titleLabel.setStyle("-fx-text-fill: white;");
 		titleLabel.setFont(new Font(18));
 		titleLabel.setPadding(new Insets(10));
@@ -263,9 +293,9 @@ public class RemoteUI extends Application
 		});
 		AnchorPane titleBarButtons = new AnchorPane();
 		AnchorPane.setTopAnchor(exitButton, 13.0);
-		AnchorPane.setLeftAnchor(exitButton, 850.0);
+		AnchorPane.setLeftAnchor(exitButton, 840.0);
 		AnchorPane.setTopAnchor(minButton, 13.0);
-		AnchorPane.setLeftAnchor(minButton, 826.0);
+		AnchorPane.setLeftAnchor(minButton, 816.0);
 		titleBarButtons.getChildren().add(exitButton);
 		titleBarButtons.getChildren().add(minButton);
 		titleBar.setPadding(new Insets(2, 10, 2, 10));
@@ -288,7 +318,7 @@ public class RemoteUI extends Application
 		VBox leftPane = new VBox();
 		leftPane.setPadding(new Insets(10, 5, 0, 20));
 
-		Label serverInfo = new Label("[Server Info]");
+		Label serverInfo = new Label("[Server Info] - "+serverIp);
 		serverInfo.setTextFill(Color.BURLYWOOD);
 		serverInfo.setFont(new Font(14));
 		serverInfo.setPadding(new Insets(0, 0, -23, 0));
@@ -319,7 +349,7 @@ public class RemoteUI extends Application
 		
 		String opStatus=new String("IDLE");
 		Label opStatusLabel = new Label(opStatus);
-		opStatusLabel.setStyle("-fx-font-weight: bold;");
+//		opStatusLabel.setStyle("-fx-font-weight: bold;");
 		opStatusLabel.setFont(new Font(14));
 		
 		if(opStatus.equals("IDLE"))
@@ -459,7 +489,7 @@ public class RemoteUI extends Application
 		Label reqQueryLabel = new Label("· Request Query (PostgreSQL)");
 		reqQueryLabel.setTextFill(Color.WHITE);
 		reqQueryLabel.setMinWidth(Region.USE_PREF_SIZE);
-		reqQueryLabel.setPrefWidth(200);
+		reqQueryLabel.setPrefWidth(220);
 		reqQueryLabel.setFont(new Font(14));
 
 		TextField reqText = new TextField();
@@ -499,7 +529,7 @@ public class RemoteUI extends Application
 		for(int i=0;i<7;++i)
 		{
 			ok[i]=new Label("PASSED");
-			ok[i].setTranslateX(35);
+			ok[i].setTranslateX(30);
 			ok[i].getStylesheets().add("/css/checkLabelBorder.css");
 		}
 		
@@ -787,5 +817,25 @@ public class RemoteUI extends Application
 		vBox.setAlignment(Pos.CENTER);
 
 		return vBox;
+	}
+	
+	private Pane getHistory()
+	{
+		history=new History();
+		return history.buildPane();
+	}
+	
+	private Pane getLogTrace()
+	{
+		logTrace=new LogTrace();
+		return new FlowPane();
+		
+	}
+	
+	private Pane getErrorTrace()
+	{
+		errorTrace=new ErrorTrace();
+		return new FlowPane();
+		
 	}
 }

@@ -1,6 +1,6 @@
 
 .tab-pane {
-	-fx-tab-min-width: 80.0px;
+	-fx-tab-min-width: 100.0px;
 	-fx-border-color: transparent;
 	-fx-background-radius: 0;
 }

@@ -23,4 +23,44 @@ public class Trace
 		this.result = result;
 	}
 
+	public int getNum()
+	{
+		return num;
+	}
+
+	public void setNum(int num)
+	{
+		this.num = num;
+	}
+
+	public String getTime()
+	{
+		return time;
+	}
+
+	public void setTime(String time)
+	{
+		this.time = time;
+	}
+
+	public String getQuery()
+	{
+		return query;
+	}
+
+	public void setQuery(String query)
+	{
+		this.query = query;
+	}
+
+	public boolean isResult()
+	{
+		return result;
+	}
+
+	public void setResult(boolean result)
+	{
+		this.result = result;
+	}
+
 }

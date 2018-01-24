@@ -8,7 +8,9 @@
 
 package enav.monitor.polling;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Client
@@ -19,7 +21,7 @@ public class Client
 	private String lastTime;
 	private String usingTime;
 	private int usingCount;
-	private static List<Trace> logTrace;
+	private static List<Trace> sqlList;
 
 	public static String initCommon;
 	public static String lastCommon;
@@ -42,8 +44,8 @@ public class Client
 
 		this.usingTime = getUsingTime();
 
-		if (logTrace == null)
-			logTrace = new ArrayList<Trace>();
+		if (sqlList == null)
+			sqlList = new ArrayList<Trace>();
 
 		// add each client's trace
 
@@ -71,7 +73,7 @@ public class Client
 
 	public String getUsingTime()
 	{
-		usingTime=calculateUsingTime(initTime, lastTime);
+		usingTime = calculateUsingTime(initTime, lastTime);
 		return usingTime;
 	}
 
@@ -110,12 +112,6 @@ public class Client
 		this.isRunning = isRunning;
 	}
 
-	public void addTrace(int num, String time, String query, boolean result)
-	{
-
-		logTrace.add(new Trace(num, time, query, result));
-	}
-
 	public void update(String lastTime)
 	{
 		this.lastTime = lastTime;
@@ -125,7 +121,49 @@ public class Client
 
 	private String calculateUsingTime(String init, String last)
 	{
-		// make algorithm to calculate usingTime
-		return "temp_time";
+		String dateStart = init;
+		String dateStop = last;
+
+		// HH converts hour in 24 hours format (0-23), day calculation
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+		Date d1 = null;
+		Date d2 = null;
+
+		StringBuilder sb = null;
+		;
+
+		try
+		{
+			d1 = format.parse(dateStart);
+			d2 = format.parse(dateStop);
+
+			// in milliseconds
+			long diff = d2.getTime() - d1.getTime();
+
+			long diffSeconds = diff / 1000 % 60;
+			long diffMinutes = diff / (60 * 1000) % 60;
+			long diffHours = diff / (60 * 60 * 1000) % 24;
+			long diffDays = diff / (24 * 60 * 60 * 1000);
+
+			sb = new StringBuilder();
+			sb.append(diffDays).append("d ").append(diffHours).append(':').append(diffMinutes).append(':')
+					.append(diffSeconds);
+
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		return sb.toString();
 	}
+	
+
+	public void addTrace(int num, String initTime, String query, boolean result)
+	{
+
+		sqlList.add(new Trace(num, initTime, query, result));
+	}
+
 }

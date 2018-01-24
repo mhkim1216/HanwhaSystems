@@ -311,7 +311,7 @@ public class RemoteUI extends Application
 
 		Label serverInfo = new Label("[Server Info] - "+serverIp);
 		serverInfo.setTextFill(Color.BURLYWOOD);
-		serverInfo.setFont(new Font(14));
+		serverInfo.setFont(new Font(15));
 		serverInfo.setPadding(new Insets(0, 0, -23, 0));
 
 		Gauge summaryGauge = GaugeBuilder.create().skinType(SkinType.SIMPLE).decimals(2).maxValue(100).unit("%")
@@ -341,7 +341,7 @@ public class RemoteUI extends Application
 		String opStatus=new String("IDLE");
 		Label opStatusLabel = new Label(opStatus);
 //		opStatusLabel.setStyle("-fx-font-weight: bold;");
-		opStatusLabel.setFont(new Font(14));
+		opStatusLabel.setFont(new Font(15));
 		
 		if(opStatus.equals("IDLE"))
 			opStatusLabel.setTextFill(Color.rgb(255, 235, 59));
@@ -352,7 +352,7 @@ public class RemoteUI extends Application
 		
 		Label opInfo = new Label("[Operation] - ");
 		opInfo.setTextFill(Color.BURLYWOOD);
-		opInfo.setFont(new Font(14));
+		opInfo.setFont(new Font(15));
 		
 		opTitle.getChildren().addAll(opInfo, opStatusLabel);
 			
@@ -433,7 +433,7 @@ public class RemoteUI extends Application
 		reqQuery.setPadding(new Insets(0, 0, 13, 0));
 
 		reqInfoLabel.setTextFill(Color.BURLYWOOD);
-		reqInfoLabel.setFont(new Font(14));
+		reqInfoLabel.setFont(new Font(15));
 
 		Label reqLabel = new Label("· Requestor");
 		reqLabel.setTextFill(Color.WHITE);
@@ -546,7 +546,7 @@ public class RemoteUI extends Application
 
 		Label logTitle = new Label("[Server Logs]");
 		logTitle.setTextFill(Color.BURLYWOOD);
-		logTitle.setFont(new Font(14));
+		logTitle.setFont(new Font(15));
 		logTitle.setPadding(new Insets(0, 0, 13, 0));
 		TextArea logArea = new TextArea();
 		logArea.getStylesheets().add("/css/TextArea.css");
@@ -554,7 +554,7 @@ public class RemoteUI extends Application
 
 		Label statusTitle = new Label("[Server Status]");
 		statusTitle.setTextFill(Color.BURLYWOOD);
-		statusTitle.setFont(new Font(14));
+		statusTitle.setFont(new Font(15));
 		statusTitle.setPadding(new Insets(15, 0, 10, 0));
 
 		HBox SVInfoPane = new HBox(20);

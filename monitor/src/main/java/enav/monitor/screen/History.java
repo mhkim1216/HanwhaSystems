@@ -17,6 +17,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -53,7 +54,7 @@ public class History
 		rPane.setMinHeight(637);
 		Label title = new Label("[Client History]");
 		title.setTextFill(Color.BURLYWOOD);
-		title.setFont(Font.font(14));
+		title.setFont(Font.font(15));
 		rPane.getChildren().addAll(title);
 
 		if (isFirst)
@@ -106,6 +107,10 @@ public class History
 
 			Circle circle = new Circle();
 			circle.setRadius(10);
+			circle.setTranslateY(5);;
+			InnerShadow innerShadow = new InnerShadow(13, Color.BLACK);
+			circle.setEffect(innerShadow);
+
 			if (!client.isRunning())
 				circle.setFill(Color.rgb(244, 67, 5));
 			else
@@ -114,8 +119,9 @@ public class History
 			Label clientLabel = new Label(client.getName());
 			clientLabel.setPrefWidth(125);
 			clientLabel.setAlignment(Pos.CENTER);
-			clientLabel.setFont(Font.font(14));
+			clientLabel.setFont(Font.font(15));
 			clientLabel.setTextFill(Color.WHITE);
+			clientLabel.setPadding(new Insets(5, 0, 0, 0));
 			TextField field1 = new TextField();
 			field1.setPrefWidth(columnWidth);
 			field1.getStylesheets().add("/css/TextField.css");

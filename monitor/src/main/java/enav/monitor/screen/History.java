@@ -146,7 +146,8 @@ public class History
 			field4.setText(String.valueOf(client.getUsingCount()));
 			field4.setAlignment(Pos.CENTER);
 			field4.setFont(Font.font(14));
-			Button traceBtn = new Button("trace");
+			Button traceBtn = new Button("TRACE ALL");
+			traceBtn.getStylesheets().add("/css/Button.css");
 
 			aClient.getChildren().addAll(circle, clientLabel, field1, field2, field3, field4, traceBtn);
 			clientList.put(client.getName(), aClient);

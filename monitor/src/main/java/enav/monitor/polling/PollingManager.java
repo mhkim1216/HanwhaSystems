@@ -48,10 +48,17 @@ public class PollingManager
 
 	public void monitor()
 	{
-		// what manager thread has to do
-		// set Client.name, Client.initTime, Client.lastTime...etc.
-		Client.initCommon="2018-01-24 10:23:53";
-		Client.lastCommon="2018-01-24 11:09:27";
+	
+//		what manager thread has to do
+//		set Client.name, Client.initTime, Client.lastTime...etc via setResults()	
+		
+		
+		
+		setResult();
+	
+		
+		
+		
 		
 		//test codes. Requesting Row-Pane in History tab.
 		test("client1");
@@ -64,6 +71,12 @@ public class PollingManager
 		test("client1");
 		test("client1");
 		test("client5");
+	}
+	
+	private void setResult()
+	{
+		Client.initCommon="2018-01-24 10:23:53";
+		Client.lastCommon="2018-01-24 11:09:27";
 	}
 	
 	// if new session is created(manager thread is interrupted)

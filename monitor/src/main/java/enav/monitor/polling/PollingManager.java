@@ -1,6 +1,6 @@
 /**
  * Created 01.23.2018.
- * Last Modified 01.23.2018.
+ * Last Modified 01.27.2018.
  * Class for managing polling system has been built using POJO.
  * 
  * 
@@ -8,8 +8,15 @@
 
 package enav.monitor.polling;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import enav.monitor.screen.ErrorTrace;
 import enav.monitor.screen.History;
@@ -19,10 +26,9 @@ import enav.monitor.screen.RemoteUI;
 public class PollingManager
 {
 	private static PollingManager manager;
-	
+
 	// managing clients list in history tab.
 	private Map<String, Client> clients;
-
 
 	private RemoteUI rmt;
 	private History his;
@@ -46,21 +52,18 @@ public class PollingManager
 			return manager;
 	}
 
-	public void monitor()
+	public void monitor(String ip, int port)
 	{
-	
-//		what manager thread has to do
-//		set Client.name, Client.initTime, Client.lastTime...etc via setResults()	
-		
-		
-		
+
+		// what manager thread has to do
+		// set Client.name, Client.initTime, Client.lastTime...etc via setResults()
+
 		setResult();
-	
+
+		ResourceThread rThread=new ResourceThread(ip, port, rmt, 1000);
+		rThread.start();
 		
-		
-		
-		
-		//test codes. Requesting Row-Pane in History tab.
+		// test codes. Requesting Row-Pane in History tab.
 		test("client1");
 		test("client1");
 		test("client2");
@@ -72,13 +75,13 @@ public class PollingManager
 		test("client1");
 		test("client5");
 	}
-	
+
 	private void setResult()
 	{
-		Client.initCommon="2018-01-24 10:23:53";
-		Client.lastCommon="2018-01-24 11:09:27";
+		Client.initCommon = "2018-01-24 10:23:53";
+		Client.lastCommon = "2018-01-24 11:09:27";
 	}
-	
+
 	// if new session is created(manager thread is interrupted)
 	public void test(String name)
 	{
@@ -90,11 +93,11 @@ public class PollingManager
 		// at least two times
 		if (clients.containsKey(name))
 		{
-			Client client=clients.get(name);
+			Client client = clients.get(name);
 			client.update(Client.lastCommon);
 			return client;
 		}
-		
+
 		// at first time
 		else
 		{
@@ -102,5 +105,4 @@ public class PollingManager
 			return clients.get(name);
 		}
 	}
-
 }

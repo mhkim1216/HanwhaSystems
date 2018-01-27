@@ -10,12 +10,16 @@ package enav.server.parser;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 public class ParseManager
 {
 	private static ParseManager manager;
 	private Parser parser;
 	private ServerSocket sSocket;
+	private Socket socket;
+	private static final int port=1216;
+	
 	
 	private ParseManager()
 	{
@@ -26,17 +30,23 @@ public class ParseManager
 	public static ParseManager getManager()
 	{
 		if(manager!=null)
+		{	
+			System.out.println("ParseManager is created");
 			return manager;
+		}
+		
 		
 		else
 		{	
 			manager=new ParseManager();
+			System.out.println("ParseManager is created");
 			return manager;
 		}
 	}
 	
 	public void start()
 	{
+		System.out.println("Creating session between DSP and DSP monitor...");
 		createSession();
 	}
 	
@@ -44,8 +54,12 @@ public class ParseManager
 	{
 		try
 		{
-			sSocket=new ServerSocket(1216);
-			sSocket.accept();
+			sSocket=new ServerSocket(port);
+			socket=sSocket.accept();
+			
+			System.out.println("Session is created");
+			
+			createThreadsAndRun();
 		}
 		catch (IOException e)
 		{
@@ -54,4 +68,10 @@ public class ParseManager
 			e.printStackTrace();
 		}
 	}
+	
+	private void createThreadsAndRun()
+	{
+		
+	}
 }
+

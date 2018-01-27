@@ -1,6 +1,6 @@
 /**
  * Created 01.02.2018.
- * Last Modified 01.23.2018.
+ * Last Modified 01.28.2018.
  * Layout for overview screen has been built using JavaFX.
  * 
  * 
@@ -15,13 +15,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.hyperic.sigar.CpuPerc;
-import org.hyperic.sigar.FileSystemUsage;
-import org.hyperic.sigar.Mem;
-import org.hyperic.sigar.Sigar;
-import org.hyperic.sigar.SigarException;
-
 import enav.monitor.polling.PollingManager;
+
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.Gauge.SkinType;
 import eu.hansolo.medusa.GaugeBuilder;
@@ -49,6 +44,8 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseEvent;
 
 public class RemoteUI extends Application
 {
@@ -75,20 +72,24 @@ public class RemoteUI extends Application
 	private History history;
 	private LogTrace logTrace;
 	private ErrorTrace errorTrace;
-	
-	private String serverIp;
+	private Gauge ramGauge;
+	private Gauge cpuGauge;
+	private Gauge diskGauge;
+	private Gauge netGauge;
+	private Gauge summaryGauge;
+	private String ip;
+	private int port;
+	private double stageX;
+	private double stageY;
+	private double mouseX;	// previous X position
+	private double mouseY;	// previous Y position
+
+	private String serverIp = "Not Connected";
 
 	public RemoteUI()
 	{
-		ramTotal = getRamStatus("total");
-		ramUsed = getRamStatus("used");
-		cpuTotal = 1.0;
-		cpuUsed = getCpuStatus();
-		diskTotal = getDiskStatus("total");
-		diskUsed = getDiskStatus("used");
-		netTotal = 1000.0;
-		netUsed = getAllBounds();
-		serverIp="Not Connected";
+		efficiency = 0;
+
 	}
 
 	public static void main(String[] args)
@@ -111,10 +112,10 @@ public class RemoteUI extends Application
 		setRootPane();
 		setScene();
 		setStage(primaryStage);
-		
-		manager=PollingManager.getInstance(this, history, logTrace, errorTrace);
-		//add codes for running manager's thread in background
-		manager.monitor();	
+
+		manager = PollingManager.getInstance(this, history, logTrace, errorTrace);
+		// add codes for running manager's thread in background
+		manager.monitor("127.0.0.1", 1216);
 	}
 
 	@Override
@@ -146,16 +147,18 @@ public class RemoteUI extends Application
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		primaryStage.setTitle("eNavigation DSP Monitor");
 		primaryStage.setScene(scene);
+		stageX=primaryStage.getX();
+		stageY=primaryStage.getY();
 		primaryStage.show();
 	}
 
 	private void setTabPane()
 	{
 		// create another tabs
-		hPane=getHistory();
-		logPane=getLogTrace();
-		errPane=getErrorTrace();
-		
+		hPane = getHistory();
+		logPane = getLogTrace();
+		errPane = getErrorTrace();
+
 		try
 		{
 			/* Applied FXML & CSS */
@@ -181,7 +184,7 @@ public class RemoteUI extends Application
 		shadow.setOffsetX(4.0);
 		shadow.setOffsetY(4.0);
 		shadow.setRadius(10);
-		
+
 		for (int i = 0; i < tabLabel.length; ++i)
 		{
 			Tab tab = new Tab(tabLabel[i]);
@@ -218,11 +221,27 @@ public class RemoteUI extends Application
 		}
 		menuBar.getMenus().addAll(menus);
 		Label titleLabel = new Label("Remote Diagnostic System 0.1 ");
+		
+		titleLabel.setOnMousePressed(new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent e)
+			{
+				mouseX=e.getX();
+				mouseY=e.getY();
+			}		
+		});
+		titleLabel.setOnMouseReleased(new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent e)
+			{
+				primaryStage.setX(primaryStage.getX()+(e.getX()-mouseX));
+				primaryStage.setY(primaryStage.getY()+(e.getY()-mouseY));
+			}
+		});
+		
 		titleLabel.setStyle("-fx-text-fill: white;");
 		titleLabel.setFont(new Font(18));
 		titleLabel.setPadding(new Insets(10));
 		FlowPane titleBar = new FlowPane();
-		FileInputStream fis=null;
+		FileInputStream fis = null;
 		Image titleImage;
 		ImageView imageView = null;
 		try
@@ -244,7 +263,7 @@ public class RemoteUI extends Application
 		}
 		finally
 		{
-			if(fis!=null)
+			if (fis != null)
 				try
 				{
 					fis.close();
@@ -309,61 +328,61 @@ public class RemoteUI extends Application
 		VBox leftPane = new VBox();
 		leftPane.setPadding(new Insets(10, 5, 0, 20));
 
-		Label serverInfo = new Label("[Server Info] - "+serverIp);
+		Label serverInfo = new Label("[Server Info] - " + serverIp);
 		serverInfo.setTextFill(Color.BURLYWOOD);
 		serverInfo.setFont(new Font(15));
 		serverInfo.setPadding(new Insets(0, 0, -23, 0));
 
-		Gauge summaryGauge = GaugeBuilder.create().skinType(SkinType.SIMPLE).decimals(2).maxValue(100).unit("%")
+		summaryGauge = GaugeBuilder.create().skinType(SkinType.SIMPLE).decimals(2).maxValue(100).unit("%")
 				.title("USAGE").maxWidth(180).foregroundBaseColor(Color.BURLYWOOD).build();
 		summaryGauge.setNeedleColor(Color.DARKGOLDENROD);
-		summaryGauge.setValue(getEfficiency() * 100);
+		summaryGauge.setValue(efficiency * 100);
 		summaryGauge.setBarEffectEnabled(true);
 		summaryGauge.setAnimated(true);
 		summaryGauge.setAnimationDuration(2500);
 		summaryGauge.setPadding(new Insets(0, 0, -20, 20));
-		
+
 		summaryGauge.setNeedleColor(Color.rgb(16, 55, 19));
-		summaryGauge.addSection(new Section(0, 10, Color.rgb(27,94,32)));
-		summaryGauge.addSection(new Section(10, 20, Color.rgb(46,125,50)));
-		summaryGauge.addSection(new Section(20, 30, Color.rgb(56,142,60)));
-		summaryGauge.addSection(new Section(30, 40, Color.rgb(67,160,71)));
-		summaryGauge.addSection(new Section(40, 50, Color.rgb(76,175,80)));
-		summaryGauge.addSection(new Section(50, 60, Color.rgb(102,187,106)));
-		summaryGauge.addSection(new Section(60, 70, Color.rgb(129,199,132)));
-		summaryGauge.addSection(new Section(70, 80, Color.rgb(165,214,167)));
-		summaryGauge.addSection(new Section(80, 90, Color.rgb(200,230,201)));
-		summaryGauge.addSection(new Section(90, 100, Color.rgb(232,245,233)));
-		
+		summaryGauge.addSection(new Section(0, 10, Color.rgb(27, 94, 32)));
+		summaryGauge.addSection(new Section(10, 20, Color.rgb(46, 125, 50)));
+		summaryGauge.addSection(new Section(20, 30, Color.rgb(56, 142, 60)));
+		summaryGauge.addSection(new Section(30, 40, Color.rgb(67, 160, 71)));
+		summaryGauge.addSection(new Section(40, 50, Color.rgb(76, 175, 80)));
+		summaryGauge.addSection(new Section(50, 60, Color.rgb(102, 187, 106)));
+		summaryGauge.addSection(new Section(60, 70, Color.rgb(129, 199, 132)));
+		summaryGauge.addSection(new Section(70, 80, Color.rgb(165, 214, 167)));
+		summaryGauge.addSection(new Section(80, 90, Color.rgb(200, 230, 201)));
+		summaryGauge.addSection(new Section(90, 100, Color.rgb(232, 245, 233)));
+
 		HBox opTitle = new HBox();
 		opTitle.setPadding(new Insets(0, 0, 10, 0));
-		
-		String opStatus=new String("IDLE");
+
+		String opStatus = new String("IDLE");
 		Label opStatusLabel = new Label(opStatus);
-//		opStatusLabel.setStyle("-fx-font-weight: bold;");
+		// opStatusLabel.setStyle("-fx-font-weight: bold;");
 		opStatusLabel.setFont(new Font(15));
-		
-		if(opStatus.equals("IDLE"))
+
+		if (opStatus.equals("IDLE"))
 			opStatusLabel.setTextFill(Color.rgb(255, 235, 59));
-		else if(opStatus.equals("RUN"))
+		else if (opStatus.equals("RUN"))
 			opStatusLabel.setTextFill(Color.rgb(76, 175, 80));
-		else	
+		else
 			opStatusLabel.setTextFill(Color.rgb(244, 67, 54));
-		
+
 		Label opInfo = new Label("[Operation] - ");
 		opInfo.setTextFill(Color.BURLYWOOD);
 		opInfo.setFont(new Font(15));
-		
+
 		opTitle.getChildren().addAll(opInfo, opStatusLabel);
-			
+
 		HBox errType = new HBox();
 		HBox errName = new HBox();
 		HBox errTime = new HBox();
-		
+
 		errType.setPadding(new Insets(0, 0, 10, 0));
 		errName.setPadding(new Insets(0, 0, 10, 0));
 		errTime.setPadding(new Insets(0, 0, 10, 0));
-		
+
 		Label errTypeLabel = new Label("· Err. Type");
 		errTypeLabel.setTextFill(Color.WHITE);
 		errTypeLabel.setMinWidth(Region.USE_COMPUTED_SIZE);
@@ -379,7 +398,7 @@ public class RemoteUI extends Application
 		errTimeLabel.setMinWidth(Region.USE_PREF_SIZE);
 		errTimeLabel.setPrefWidth(100);
 		errTimeLabel.setFont(new Font(14));
-		
+
 		TextField errTypeText = new TextField();
 		errTypeText.getStylesheets().add("/css/TextField.css");
 		errTypeText.setPrefColumnCount(10);
@@ -392,11 +411,11 @@ public class RemoteUI extends Application
 		errTimeText.getStylesheets().add("/css/TextField.css");
 		errTimeText.setPrefColumnCount(10);
 		errTimeText.setEditable(false);
-		
+
 		errType.getChildren().addAll(errTypeLabel, errTypeText);
 		errName.getChildren().addAll(errNameLabel, errNameText);
 		errTime.getChildren().addAll(errTimeLabel, errTimeText);
-		
+
 		leftPane.getChildren().addAll(serverInfo, summaryGauge, opTitle, errType, errName, errTime);
 		bPane.setLeft(leftPane);
 	}
@@ -516,15 +535,14 @@ public class RemoteUI extends Application
 		reqQueryText.setPrefRowCount(4);
 		reqQueryText.setEditable(false);
 
-		Label[] ok=new Label[7];
-		for(int i=0;i<7;++i)
+		Label[] ok = new Label[7];
+		for (int i = 0; i < 7; ++i)
 		{
-			ok[i]=new Label("PASSED");
+			ok[i] = new Label("PASSED");
 			ok[i].setTranslateX(30);
 			ok[i].getStylesheets().add("/css/checkLabelBorder.css");
 		}
-		
-		
+
 		requestor.getChildren().addAll(reqLabel, reqText, ok[0]);
 		reqType.getChildren().addAll(reqTypeLabel, reqTypeText, ok[1]);
 		SVModule.getChildren().addAll(SVModuleLabel, SVModuleText, ok[2]);
@@ -561,28 +579,24 @@ public class RemoteUI extends Application
 		SVInfoPane.setPadding(new Insets(0, 10, 0, 0));
 		// Adding RAM usage of a server
 
-		Gauge ramGauge = GaugeBuilder.create().skinType(SkinType.SLIM).decimals(0).maxValue(ramTotal / 1000000)
-				.unit("MBYTE").title("USED").build();
+		ramGauge = GaugeBuilder.create().skinType(SkinType.SLIM).decimals(0).unit("MBYTE").title("USED").build();
 
 		// Adding CPU usage of a server
 
-		Gauge cpuGauge = GaugeBuilder.create().skinType(SkinType.SLIM).decimals(2).maxValue(cpuTotal * 100).unit("%")
-				.title("AVERAGE").build();
+		cpuGauge = GaugeBuilder.create().skinType(SkinType.SLIM).decimals(2).unit("%").title("AVERAGE").build();
 
 		// Adding DISK usage of a server
 
-		Gauge diskGauge = GaugeBuilder.create().skinType(SkinType.SLIM).decimals(0).maxValue(diskTotal / 1000000)
-				.title("USED").unit("GBYTE").build();
+		diskGauge = GaugeBuilder.create().skinType(SkinType.SLIM).decimals(0).title("USED").unit("GBYTE").build();
 
 		// Adding network In/Out bound counts of a server
 
-		Gauge netGauge = GaugeBuilder.create().skinType(SkinType.SLIM).decimals(0).maxValue(netTotal).unit("BOUNDS")
-				.title("IN/OUT").build();
+		netGauge = GaugeBuilder.create().skinType(SkinType.SLIM).decimals(0).unit("BOUNDS").title("IN/OUT").build();
 
-		SVInfoPane.getChildren().add(getGauge("RAM USAGE", Color.rgb(255, 183, 77), ramGauge, ramUsed / 100000));
-		SVInfoPane.getChildren().add(getGauge("CPU LOAD", Color.rgb(229, 115, 115), cpuGauge, cpuUsed * 100));
-		SVInfoPane.getChildren().add(getGauge("DISK USAGE", Color.rgb(0, 188, 212), diskGauge, diskUsed / 1000000));
-		SVInfoPane.getChildren().add(getGauge("NET TRAFFIC", Color.rgb(76, 175, 80), netGauge, netUsed));
+		SVInfoPane.getChildren().add(getGauge("RAM USAGE", Color.rgb(255, 183, 77), ramGauge, 0));
+		SVInfoPane.getChildren().add(getGauge("CPU LOAD", Color.rgb(229, 115, 115), cpuGauge, 0));
+		SVInfoPane.getChildren().add(getGauge("DISK USAGE", Color.rgb(0, 188, 212), diskGauge, 0));
+		SVInfoPane.getChildren().add(getGauge("NET TRAFFIC", Color.rgb(76, 175, 80), netGauge, 0));
 		rightPane.getChildren().addAll(logTitle, logArea, statusTitle, SVInfoPane);
 
 		bPane.setRight(rightPane);
@@ -679,110 +693,6 @@ public class RemoteUI extends Application
 		bPane.setBottom(bottom);
 	}
 
-	private long getRamStatus(String type)
-	{
-		long result = 0;
-
-		Sigar sigar = new Sigar();
-		Mem mem = null;
-		try
-		{
-			mem = sigar.getMem();
-		}
-		catch (SigarException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		if (type.equals("total"))
-			result = mem.getActualFree();
-
-		else if (type.equals("used"))
-			result = mem.getActualUsed();
-
-		else
-			result = 0l;
-
-		return result;
-
-	}
-
-	private double getCpuStatus()
-	{
-		Sigar sigar = new Sigar();
-		CpuPerc cpu = null;
-		double result;
-
-		try
-		{
-			cpu = sigar.getCpuPerc();
-		}
-		catch (SigarException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		finally
-		{
-			result = cpu.getUser();
-		}
-
-		return result;
-	}
-
-	private long getDiskStatus(String type)
-	{
-		Sigar sigar = new Sigar();
-		FileSystemUsage disk = null;
-		long result;
-
-		try
-		{
-			disk = sigar.getFileSystemUsage("C:\\");
-		}
-		catch (SigarException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		if (type.equals("total"))
-			result = disk.getTotal();
-
-		else if (type.equals("used"))
-			result = disk.getUsed();
-		else
-			result = 0l;
-
-		return result;
-	}
-
-	private int getAllBounds()
-	{
-		Sigar sigar = new Sigar();
-		int result = 0;
-
-		try
-		{
-			result = sigar.getNetStat().getTcpOutboundTotal() + sigar.getNetStat().getTcpInboundTotal();
-		}
-		catch (SigarException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return result;
-	}
-
-	private double getEfficiency()
-	{
-		efficiency = (ramUsed / ramTotal + cpuUsed / cpuTotal + diskUsed / diskTotal + netUsed / netTotal) / 4;
-
-		return efficiency;
-	}
-
 	private VBox getGauge(final String text, final Color color, final Gauge gauge, double value)
 	{
 		Rectangle bar = new Rectangle(100, 3);
@@ -809,24 +719,96 @@ public class RemoteUI extends Application
 
 		return vBox;
 	}
-	
+
 	private Pane getHistory()
 	{
-		history=new History();
+		history = new History();
 		return history.buildPane();
 	}
-	
+
 	private Pane getLogTrace()
 	{
-		logTrace=new LogTrace();
+		logTrace = new LogTrace();
 		return new FlowPane();
-		
+
 	}
-	
+
 	private Pane getErrorTrace()
 	{
-		errorTrace=new ErrorTrace();
+		errorTrace = new ErrorTrace();
 		return new FlowPane();
-		
+
+	}
+
+	public void setResourceStatus(double used, double total, String resource)
+	{
+		if (resource.equals("ram"))
+		{
+			ramUsed = used;
+			ramTotal = total;
+			Platform.runLater(new Runnable()
+			{
+				public void run()
+				{
+					ramGauge.setMaxValue(ramTotal / 1000000);
+					ramGauge.setValue(ramUsed / 1000000);
+					System.out.println("ramGauge updated");
+				}
+			});
+		}
+		else if (resource.equals("cpu"))
+		{
+			cpuUsed = used;
+			cpuTotal = total; // total==1
+			Platform.runLater(new Runnable()
+			{
+				public void run()
+				{
+					cpuGauge.setMaxValue(cpuTotal*100);
+					cpuGauge.setValue(cpuUsed * 100);
+					System.out.println("cpuGauge updated");
+				}
+			});
+		}
+		else if (resource.equals("disk"))
+		{
+			diskUsed = used;
+			diskTotal = total;
+			Platform.runLater(new Runnable()
+			{
+				public void run()
+				{
+					diskGauge.setMaxValue(diskTotal / 1000000);
+					diskGauge.setValue(diskUsed / 1000000);
+					System.out.println("diskGauge updated");
+				}
+			});
+		}
+		else if (resource.equals("net"))
+		{
+			netUsed = used;
+			netTotal = total; // total=10000;
+			Platform.runLater(new Runnable()
+			{
+				public void run()
+				{
+					netGauge.setMaxValue(netTotal);
+					netGauge.setValue(netUsed);
+					System.out.println("netGauge updated");
+				}
+			});
+		}
+		else if (resource.equals("eff"))
+		{
+			efficiency = used;
+			Platform.runLater(new Runnable()
+			{
+				public void run()
+				{
+					summaryGauge.setValue(efficiency);
+					System.out.println("efficiencyGauge updated");
+				}
+			});
+		}
 	}
 }

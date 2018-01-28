@@ -44,7 +44,6 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 
 public class RemoteUI extends Application
@@ -78,7 +77,7 @@ public class RemoteUI extends Application
 	private Gauge netGauge;
 	private Gauge summaryGauge;
 	private String ip;
-	private int port;
+	private final static int port=1216;
 	private double stageX;
 	private double stageY;
 	private double mouseX;	// previous X position
@@ -115,7 +114,7 @@ public class RemoteUI extends Application
 
 		manager = PollingManager.getInstance(this, history, logTrace, errorTrace);
 		// add codes for running manager's thread in background
-		manager.monitor("127.0.0.1", 1216);
+		manager.monitor("127.0.0.1", port);
 	}
 
 	@Override
@@ -229,6 +228,7 @@ public class RemoteUI extends Application
 				mouseY=e.getY();
 			}		
 		});
+
 		titleLabel.setOnMouseReleased(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent e)
 			{

@@ -10,7 +10,6 @@ package enav.server.parser;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 import com.google.gson.Gson;
@@ -18,18 +17,17 @@ import com.google.gson.Gson;
 public class ResourceManager
 {
 	private static ResourceManager manager;
-	private ServerSocket sSocket;
 	private Socket socket;
-	private static final int port = 1216;
 	private BufferedOutputStream bos;
 	private int refresh;
 
-	private ResourceManager()
+	private ResourceManager(Socket socket)
 	{
+		this.socket=socket;
 		refresh=1000;
 	}
 
-	public static ResourceManager getManager()
+	public static ResourceManager getManager(Socket socket)
 	{
 		if (manager != null)
 		{
@@ -39,7 +37,7 @@ public class ResourceManager
 
 		else
 		{
-			manager = new ResourceManager();
+			manager = new ResourceManager(socket);
 			System.out.println("ResourceManager is created");
 			return manager;
 		}
@@ -47,19 +45,17 @@ public class ResourceManager
 
 	public void start()
 	{
-		System.out.println("Creating session between DSP server and DSP monitor...");
-		createSession();
+		System.out.println("Creating resource stream between DSP server and DSP monitor...");
+		createStream();
 	}
 
-	private void createSession()
+	private void createStream()
 	{
 		try
 		{
-			sSocket = new ServerSocket(port);
-			socket = sSocket.accept();
 			bos=new BufferedOutputStream(socket.getOutputStream());
 			
-			System.out.println("Session is created");
+			System.out.println("Resource stream is created");
 
 			while (true)
 			{
@@ -75,17 +71,6 @@ public class ResourceManager
 		catch (InterruptedException e)
 		{
 			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-				sSocket.close();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
 		}
 	}
 

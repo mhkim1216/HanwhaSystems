@@ -13,7 +13,7 @@ import enav.monitor.screen.RemoteUI;
 class ResourceThread extends Thread
 {
 	private RemoteUI rmt;
-	private Socket parseSocket;
+	private Socket resourceSocket;
 	private BufferedInputStream bis;
 	private int refresh;
 
@@ -25,8 +25,8 @@ class ResourceThread extends Thread
 		
 		try
 		{
-			parseSocket = new Socket(ip, port);
-			bis = new BufferedInputStream(parseSocket.getInputStream());
+			resourceSocket = new DualSocket(ip, port, DualSocket.RESOURCE);
+			bis = new BufferedInputStream(resourceSocket.getInputStream());
 		}
 		catch (UnknownHostException e)
 		{
@@ -38,7 +38,6 @@ class ResourceThread extends Thread
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 
 	@Override

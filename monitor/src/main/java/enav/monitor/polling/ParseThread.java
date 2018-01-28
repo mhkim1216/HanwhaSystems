@@ -5,28 +5,25 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import enav.monitor.screen.RemoteUI;
+
 class ParseThread extends Thread
 {
-	private String ip;
-	private int port;
-	
+	private RemoteUI rmt;
 	private Socket parseSocket;
 	private BufferedInputStream bis;
+	private int refresh;
 
-	ParseThread(String ip, int port)
+	ParseThread(String ip, int port, RemoteUI rmt, int refresh)
 	{
-		this.ip = ip;
-		this.port = port;
-	}
-
-	@Override
-	public void run()
-	{
+		super("parse_monitor");
+		this.rmt = rmt;
+		this.refresh=refresh;
+		
 		try
 		{
-			Socket parseSocket = new Socket(ip, port);
+			parseSocket = new DualSocket(ip, port, DualSocket.PARSE);
 			bis = new BufferedInputStream(parseSocket.getInputStream());
-
 		}
 		catch (UnknownHostException e)
 		{
@@ -38,5 +35,16 @@ class ParseThread extends Thread
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+	}
+
+	@Override
+	public void run()
+	{
+
+		
+		
+		
+		
 	}
 }

@@ -60,6 +60,8 @@ public class PollingManager
 
 		setResult();
 
+		ParseThread pThread=new ParseThread(ip, port, rmt, 1000);
+		pThread.start();
 		ResourceThread rThread=new ResourceThread(ip, port, rmt, 1000);
 		rThread.start();
 		

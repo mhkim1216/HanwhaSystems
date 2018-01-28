@@ -1,6 +1,6 @@
 /**	
  * Created 01.25.2018.
- * Last Modified 01.25.2018.
+ * Last Modified 01.28.2018.
  * Class for managing parser has been built using POJO.
  * 
  * 
@@ -8,6 +8,7 @@
 
 package enav.server.parser;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -15,16 +16,15 @@ import java.net.Socket;
 public class ParseManager
 {
 	private static ParseManager manager;
-	private Parser parser;
-	private ServerSocket sSocket;
 	private Socket socket;
-	private static final int port=1216;
+	private BufferedOutputStream bos;
+	private int refresh;
 	
 	
-	private ParseManager()
+	private ParseManager(Socket socket)
 	{
-		
-	
+		refresh=1000;
+		this.socket=socket;
 	}
 	
 	public static ParseManager getManager()
@@ -38,7 +38,7 @@ public class ParseManager
 		
 		else
 		{	
-			manager=new ParseManager();
+			manager=new ParseManager(socket);
 			System.out.println("ParseManager is created");
 			return manager;
 		}
@@ -46,30 +46,46 @@ public class ParseManager
 	
 	public void start()
 	{
-		System.out.println("Creating session between DSP and DSP monitor...");
-		createSession();
+		System.out.println("Creating stream between DSP and DSP monitor...");
+		createStream();
 	}
 	
 	private void createSession()
 	{
 		try
 		{
-			sSocket=new ServerSocket(port);
-			socket=sSocket.accept();
-			
-			System.out.println("Session is created");
-			
-			createThreadsAndRun();
+			bos=new BufferedOutputStream(socket.getOutputStream());
+			System.out.println("Resource stream is created");
+
+			while (true)
+			{
+				createParser();
+				Thread.sleep(refresh);
+			}
+
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
-			
 			e.printStackTrace();
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				sSocket.close();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 	
-	private void createThreadsAndRun()
+	private void createParser()
 	{
 		
 	}

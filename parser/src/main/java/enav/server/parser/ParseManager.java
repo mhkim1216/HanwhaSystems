@@ -27,7 +27,7 @@ public class ParseManager
 		this.socket=socket;
 	}
 	
-	public static ParseManager getManager()
+	public static ParseManager getManager(Socket socket)
 	{
 		if(manager!=null)
 		{	
@@ -50,7 +50,7 @@ public class ParseManager
 		createStream();
 	}
 	
-	private void createSession()
+	private void createStream()
 	{
 		try
 		{
@@ -71,17 +71,6 @@ public class ParseManager
 		catch (InterruptedException e)
 		{
 			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-				sSocket.close();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
 		}
 	}
 	

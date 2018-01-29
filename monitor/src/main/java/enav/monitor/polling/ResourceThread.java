@@ -79,7 +79,7 @@ class ResourceThread extends Thread
 				rmt.setResourceStatus(used, total, "disk");
 
 				used = jsonObject.get("netUsed").getAsDouble();
-				rmt.setResourceStatus(used, 10000, "net");
+				rmt.setResourceStatus(used, 1000, "net");
 
 				used = jsonObject.get("efficiency").getAsDouble();
 				rmt.setResourceStatus(used * 100, 0, "eff");

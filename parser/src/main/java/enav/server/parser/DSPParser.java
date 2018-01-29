@@ -61,6 +61,7 @@ public class DSPParser
 			
 			System.out.println("Completed checking sockets...");
 
+			// Call Working Thread
 			Thread parseThread = new Thread(new Runnable()
 			{
 

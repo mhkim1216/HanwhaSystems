@@ -8,30 +8,59 @@
 
 package enav.server.parser;
 
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class DSPParser
 {
 	private static ServerSocket sSocket;
-	private static Socket parseSocket;
-	private static Socket resourceSocket;
+	private static Socket parseSocket=null;
+	private static Socket resourceSocket=null;
 	private static int port = 1216;
+	public final static int PARSE = 1;
+	public final static int RESOURCE = 2;
 
 	public static void main(String[] args)
 	{
 		try
 		{
+			InputStream is;
+			Socket socket;
+			ServerSocket sSocket= new ServerSocket(port);
+			int socketId;
+
+			
 			while (true)
-			{
-				sSocket = new ServerSocket(port);
-				parseSocket = sSocket.accept();
-				resourceSocket = sSocket.accept();
+			{				
+				System.out.println("Waiting monitor to connect...");
 				
-				if(parseSocket!=null && resourceSocket!=null)
+				socket = sSocket.accept();
+				
+				System.out.println("Checking sockets...");
+				
+				is = socket.getInputStream();
+				socketId=is.read();
+				
+				if (socketId == DSPParser.PARSE)
+				{	
+					parseSocket = socket;
+					System.out.println("Parser received parse bit");
+				}
+				else if (socketId == DSPParser.RESOURCE)
+				{	
+					resourceSocket = socket;
+					System.out.println("Parser received resource bit");
+				}
+
+				if (resourceSocket != null && parseSocket != null)
 					break;
 			}
+			
+			System.out.println("Completed checking sockets...");
+
 			Thread parseThread = new Thread(new Runnable()
 			{
 

@@ -27,7 +27,7 @@ class ParseThread extends Thread
 			bis = new BufferedInputStream(parseSocket.getInputStream());
 			bos=new BufferedOutputStream(parseSocket.getOutputStream());
 			parseSocket.sendSocketId(bos);
-			System.out.println("Send parse bit");
+//			System.out.println("Send parse bit");
 		}
 		catch (UnknownHostException e)
 		{

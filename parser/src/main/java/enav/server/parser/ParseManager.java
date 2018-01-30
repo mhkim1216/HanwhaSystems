@@ -55,27 +55,15 @@ public class ParseManager
 		{
 			bos=new BufferedOutputStream(socket.getOutputStream());
 			System.out.println("Resource stream is created");
-
-			while (true)
-			{
-				createParser();
-				Thread.sleep(refresh);
-			}
+			
+			Parser parser=new Parser(bos);
+			parser.monitor();
 
 		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	private void createParser()
-	{
-		
 	}
 }
 

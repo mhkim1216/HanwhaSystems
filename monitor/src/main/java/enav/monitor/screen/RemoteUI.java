@@ -146,6 +146,7 @@ public class RemoteUI extends Application
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		primaryStage.setTitle("eNavigation DSP Monitor");
 		primaryStage.setScene(scene);
+		primaryStage.setAlwaysOnTop(true);
 		stageX=primaryStage.getX();
 		stageY=primaryStage.getY();
 		primaryStage.show();
@@ -752,7 +753,6 @@ public class RemoteUI extends Application
 				{
 					ramGauge.setMaxValue(ramTotal / 1000000);
 					ramGauge.setValue(ramUsed / 1000000);
-					System.out.println("ramGauge updated");
 				}
 			});
 		}
@@ -766,7 +766,6 @@ public class RemoteUI extends Application
 				{
 					cpuGauge.setMaxValue(cpuTotal*100);
 					cpuGauge.setValue(cpuUsed * 100);
-					System.out.println("cpuGauge updated");
 				}
 			});
 		}
@@ -780,7 +779,6 @@ public class RemoteUI extends Application
 				{
 					diskGauge.setMaxValue(diskTotal / 1000000);
 					diskGauge.setValue(diskUsed / 1000000);
-					System.out.println("diskGauge updated");
 				}
 			});
 		}
@@ -794,7 +792,6 @@ public class RemoteUI extends Application
 				{
 					netGauge.setMaxValue(netTotal);
 					netGauge.setValue(netUsed);
-					System.out.println("netGauge updated");
 				}
 			});
 		}
@@ -806,7 +803,6 @@ public class RemoteUI extends Application
 				public void run()
 				{
 					summaryGauge.setValue(efficiency);
-					System.out.println("efficiencyGauge updated");
 				}
 			});
 		}

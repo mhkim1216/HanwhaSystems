@@ -79,7 +79,7 @@ public class ResourceManager
 		Resource res = new Resource();
 		Gson gson =new Gson();
 		String resource=gson.toJson(res);
-		System.out.println(resource);
+//		System.out.println(resource);
 		bos.write(resource.getBytes());
 		bos.flush();
 	}

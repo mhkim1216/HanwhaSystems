@@ -30,7 +30,7 @@ class ResourceThread extends Thread
 			bis = new BufferedInputStream(resourceSocket.getInputStream());
 			bos = new BufferedOutputStream(resourceSocket.getOutputStream());
 			resourceSocket.sendSocketId(bos);
-			System.out.println("Send resource bit");
+//			System.out.println("Send resource bit");
 		}
 		catch (UnknownHostException e)
 		{
@@ -63,7 +63,7 @@ class ResourceThread extends Thread
 				jsonResource = new String(resource);
 				jsonResource = jsonResource.substring(0, jsonResource.lastIndexOf("}") + 1);
 
-				System.out.println(jsonResource);
+//				System.out.println(jsonResource);
 
 				jsonObject = parser.parse(jsonResource).getAsJsonObject();
 

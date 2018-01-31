@@ -8,30 +8,31 @@
 
 package enav.server.parser;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+
+import com.google.gson.Gson;
 
 public class Parser
 {
 	private BufferedOutputStream bos;
-	private BufferedInputStream bis;
-	private long prevPos;
+	private RandomAccessFile raf;
+	private DSPLog dspLog;
+	private String rawString;
 	private File log;
 	private final static int refresh=500;
 
 	public Parser(BufferedOutputStream bos)
 	{
 		this.bos = bos;
-		this.prevPos = 0;
+		dspLog=new DSPLog();
 	}
 
 	public void monitor()
 	{
 		byte[] rawBytes = new byte[32768];
-		String rawString;
 		long prevFileSize=0;
 		long curFileSize=0;
 		boolean isInit=true;
@@ -41,9 +42,9 @@ public class Parser
 			while (true)
 			{
 				Thread.sleep(refresh);
-				// need RandomAccessFile class
+				
 				log = new File(System.getenv("CATALINA_HOME") + "/eNaviLogs/eNaviService.log");
-				bis = new BufferedInputStream(new FileInputStream(log));
+				raf = new RandomAccessFile(log, "r");
 				prevFileSize=curFileSize;
 				curFileSize=log.length();
 	
@@ -52,17 +53,11 @@ public class Parser
 					isInit=false;
 					continue;
 				}
-				
-				bis.mark((int) prevPos);
-				bis.reset();
-				bis.read(rawBytes);
-				prevPos = curFileSize;
+				raf.seek(prevFileSize);
+				raf.read(rawBytes);
 				rawString = new String(rawBytes);
-				
-				
-				System.out.println(rawString);
 			
-				parse(rawString);
+				parse();
 			}
 
 		}
@@ -70,7 +65,7 @@ public class Parser
 		{
 			e.printStackTrace();
 		}
-		catch(InterruptedException e)
+		catch (InterruptedException e)
 		{
 			e.printStackTrace();
 		}
@@ -78,7 +73,7 @@ public class Parser
 		{
 			try
 			{
-				bis.close();
+				raf.close();
 			}
 			catch (IOException e)
 			{
@@ -87,9 +82,63 @@ public class Parser
 		}
 	}
 
-	private void parse(String rawString)
+	private void parse() throws IOException
 	{
-
+		parseRequestor();
+		parseRequestType();
+		parseService();
+		parseParam();
+		parseSessionId();
+		parseSessionTime();
+		parseSQL();
+		
+		Gson gson =new Gson();
+		String parsedJson=gson.toJson(dspLog);
+		System.out.println(parsedJson);
+		bos.write(parsedJson.getBytes());
+		bos.flush();
+	}
+	
+	private void parseRequestor()
+	{
+		
+		
+	}
+	
+	private void parseRequestType()
+	{
+		
+		
+	}
+	
+	private void parseService()
+	{
+		
+		
+	}
+	
+	private void parseParam()
+	{
+		
+		
+	}
+	
+	private void parseSessionId()
+	{
+		
+		
+	}
+	
+	private void parseSessionTime()
+	{
+		
+		
+	}
+	
+	private void parseSQL()
+	{
+		dspLog.setSql(rawString.split("==>  Preparing: ")[1].split("\n")[0]);
+//		System.out.println(dspLog.getSql());
 	}
 
 }

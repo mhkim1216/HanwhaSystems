@@ -26,8 +26,8 @@ class Resource implements Serializable
 
 	Resource()
 	{
-		System.out.println("");
-		System.out.println("---------------------------------");
+//		System.out.println("");
+//		System.out.println("---------------------------------");
 		ramTotal = getRamStatus("total");
 		ramUsed = getRamStatus("used");
 		cpuTotal = 1;
@@ -37,8 +37,7 @@ class Resource implements Serializable
 		netTotal = 1000;
 		netUsed = getAllBounds();
 		efficiency = getEfficiency();
-		System.out.println("---------------------------------");
-		System.out.println("");
+//		System.out.println("---------------------------------");
 	}
 
 	private long getRamStatus(String type)
@@ -60,13 +59,13 @@ class Resource implements Serializable
 		if (type.equals("total"))
 		{
 			result = mem.getTotal();
-			System.out.println("- Ram Total : "+result);
+//			System.out.println("- Ram Total : "+result);
 		}
 
 		else if (type.equals("used"))
 		{
 			result = mem.getActualUsed();
-			System.out.println("- Ram Used : "+result);
+//			System.out.println("- Ram Used : "+result);
 		}
 
 		else
@@ -93,7 +92,7 @@ class Resource implements Serializable
 		finally
 		{
 			result = cpu.getUser();
-			System.out.println("- CPU Load : "+result);
+//			System.out.println("- CPU Load : "+result);
 		}
 
 		return result;
@@ -118,13 +117,13 @@ class Resource implements Serializable
 		if (type.equals("total"))
 		{	
 			result = disk.getTotal();
-			System.out.println("- Disk Total : "+result);
+//			System.out.println("- Disk Total : "+result);
 		}
 
 		else if (type.equals("used"))
 		{
 			result = disk.getUsed();
-			System.out.println("- Disk Used : "+result);
+//			System.out.println("- Disk Used : "+result);
 		}
 		else
 			result = 0l;
@@ -140,7 +139,7 @@ class Resource implements Serializable
 		try
 		{
 			result = sigar.getNetStat().getTcpOutboundTotal() + sigar.getNetStat().getTcpInboundTotal();
-			System.out.println("- All Network Bounds : "+result);
+//			System.out.println("- All Network Bounds : "+result);
 		}
 		catch (SigarException e)
 		{

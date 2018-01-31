@@ -54,7 +54,7 @@ public class ParseManager
 		try
 		{
 			bos=new BufferedOutputStream(socket.getOutputStream());
-			System.out.println("Resource stream is created");
+			System.out.println("Parsing stream is created");
 			
 			Parser parser=new Parser(bos);
 			parser.monitor();

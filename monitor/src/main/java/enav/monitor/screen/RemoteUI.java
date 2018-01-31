@@ -82,6 +82,19 @@ public class RemoteUI extends Application
 	private double stageY;
 	private double mouseX;	// previous X position
 	private double mouseY;	// previous Y position
+	
+	TextField reqText;
+	TextField reqTypeText;
+	TextField SVModuleText;
+	TextField paramText;
+	TextField sIdText;
+	TextField sTimeText;
+	TextField tempSlotText;
+	TextArea reqQueryText;
+	
+	TextField errTypeText;
+	TextField errNameText;
+	TextField errTimeText;
 
 	private String serverIp = "Not Connected";
 
@@ -322,7 +335,7 @@ public class RemoteUI extends Application
 	private void buildLeftPane()
 	{
 		bPane = new BorderPane();
-		bPane.setMaxWidth(1225);
+		bPane.setMinWidth(1225);
 		bPane.setMinHeight(637);
 		bPane.setPadding(new Insets(5, 10, 0, 10));
 
@@ -339,9 +352,7 @@ public class RemoteUI extends Application
 		summaryGauge.setNeedleColor(Color.DARKGOLDENROD);
 		summaryGauge.setValue(efficiency * 100);
 		summaryGauge.setBarEffectEnabled(true);
-		summaryGauge.setAnimated(true);
-		summaryGauge.setAnimationDuration(2500);
-		summaryGauge.setPadding(new Insets(0, 0, -20, 20));
+		summaryGauge.setPadding(new Insets(10, -20, -15, 32));
 
 		summaryGauge.setNeedleColor(Color.rgb(16, 55, 19));
 		summaryGauge.addSection(new Section(0, 10, Color.rgb(27, 94, 32)));
@@ -356,7 +367,7 @@ public class RemoteUI extends Application
 		summaryGauge.addSection(new Section(90, 100, Color.rgb(232, 245, 233)));
 
 		HBox opTitle = new HBox();
-		opTitle.setPadding(new Insets(0, 0, 10, 0));
+		opTitle.setPadding(new Insets(2, 0, 7, 0));
 
 		String opStatus = new String("IDLE");
 		Label opStatusLabel = new Label(opStatus);
@@ -400,17 +411,17 @@ public class RemoteUI extends Application
 		errTimeLabel.setPrefWidth(100);
 		errTimeLabel.setFont(new Font(14));
 
-		TextField errTypeText = new TextField();
+		errTypeText = new TextField();
 		errTypeText.getStylesheets().add("/css/TextField.css");
-		errTypeText.setPrefColumnCount(10);
+		errTypeText.setPrefColumnCount(12);
 		errTypeText.setEditable(false);
-		TextField errNameText = new TextField();
+		errNameText = new TextField();
 		errNameText.getStylesheets().add("/css/TextField.css");
-		errNameText.setPrefColumnCount(10);
+		errNameText.setPrefColumnCount(12);
 		errNameText.setEditable(false);
-		TextField errTimeText = new TextField();
+		errTimeText = new TextField();
 		errTimeText.getStylesheets().add("/css/TextField.css");
-		errTimeText.setPrefColumnCount(10);
+		errTimeText.setPrefColumnCount(12);
 		errTimeText.setEditable(false);
 
 		errType.getChildren().addAll(errTypeLabel, errTypeText);
@@ -442,14 +453,14 @@ public class RemoteUI extends Application
 		HBox tempSlot = new HBox();
 		HBox reqQuery = new HBox();
 
-		reqInfoLabel.setPadding(new Insets(0, 0, 10, 0));
-		requestor.setPadding(new Insets(0, 0, 10, 0));
-		SVModule.setPadding(new Insets(0, 0, 10, 0));
-		reqParam.setPadding(new Insets(0, 0, 10, 0));
-		reqType.setPadding(new Insets(0, 0, 10, 0));
-		sessionID.setPadding(new Insets(0, 0, 10, 0));
-		sessionTime.setPadding(new Insets(0, 0, 10, 0));
-		tempSlot.setPadding(new Insets(0, 0, 10, 0));
+		reqInfoLabel.setPadding(new Insets(0, 0, 8, 0));
+		requestor.setPadding(new Insets(0, 0, 8, 0));
+		SVModule.setPadding(new Insets(0, 0, 8, 0));
+		reqParam.setPadding(new Insets(0, 0, 8, 0));
+		reqType.setPadding(new Insets(0, 0, 8, 0));
+		sessionID.setPadding(new Insets(0, 0, 8, 0));
+		sessionTime.setPadding(new Insets(0, 0, 8, 0));
+		tempSlot.setPadding(new Insets(0, 0, 8, 0));
 		reqQuery.setPadding(new Insets(0, 0, 13, 0));
 
 		reqInfoLabel.setTextFill(Color.BURLYWOOD);
@@ -500,47 +511,48 @@ public class RemoteUI extends Application
 		Label reqQueryLabel = new Label("· Request Query (PostgreSQL)");
 		reqQueryLabel.setTextFill(Color.WHITE);
 		reqQueryLabel.setMinWidth(Region.USE_PREF_SIZE);
-		reqQueryLabel.setPrefWidth(220);
+		reqQueryLabel.setPrefWidth(240);
 		reqQueryLabel.setFont(new Font(14));
-
-		TextField reqText = new TextField();
+		
+		reqText = new TextField();
 		reqText.getStylesheets().add("/css/TextField.css");
-		reqText.setPrefColumnCount(16);
+		reqText.setPrefColumnCount(18);
 		reqText.setEditable(false);
-		TextField reqTypeText = new TextField();
+		reqTypeText = new TextField();
 		reqTypeText.getStylesheets().add("/css/TextField.css");
-		reqTypeText.setPrefColumnCount(16);
+		reqTypeText.setPrefColumnCount(18);
 		reqTypeText.setEditable(false);
-		TextField SVModuleText = new TextField();
+		SVModuleText = new TextField();
 		SVModuleText.getStylesheets().add("/css/TextField.css");
-		SVModuleText.setPrefColumnCount(16);
+		SVModuleText.setPrefColumnCount(18);
 		SVModuleText.setEditable(false);
-		TextField paramText = new TextField();
+		paramText = new TextField();
 		paramText.getStylesheets().add("/css/TextField.css");
-		paramText.setPrefColumnCount(16);
+		paramText.setPrefColumnCount(18);
 		paramText.setEditable(false);
-		TextField sIdText = new TextField();
+		sIdText = new TextField();
 		sIdText.getStylesheets().add("/css/TextField.css");
-		sIdText.setPrefColumnCount(16);
+		sIdText.setPrefColumnCount(18);
 		sIdText.setEditable(false);
-		TextField sTimeText = new TextField();
+		sTimeText = new TextField();
 		sTimeText.getStylesheets().add("/css/TextField.css");
-		sTimeText.setPrefColumnCount(16);
+		sTimeText.setPrefColumnCount(18);
 		sTimeText.setEditable(false);
-		TextField tempSlotText = new TextField();
+		tempSlotText = new TextField();
 		tempSlotText.getStylesheets().add("/css/TextField.css");
-		tempSlotText.setPrefColumnCount(16);
+		tempSlotText.setPrefColumnCount(18);
 		tempSlotText.setEditable(false);
-		TextArea reqQueryText = new TextArea();
+		reqQueryText = new TextArea();
 		reqQueryText.getStylesheets().add("/css/TextArea.css");
-		reqQueryText.setPrefRowCount(4);
+		reqQueryText.setPrefRowCount(7);
 		reqQueryText.setEditable(false);
+		reqQueryText.setWrapText(true);
 
 		Label[] ok = new Label[7];
 		for (int i = 0; i < 7; ++i)
 		{
 			ok[i] = new Label("PASSED");
-			ok[i].setTranslateX(30);
+			ok[i].setTranslateX(20);
 			ok[i].getStylesheets().add("/css/checkLabelBorder.css");
 		}
 
@@ -576,7 +588,7 @@ public class RemoteUI extends Application
 		statusTitle.setFont(new Font(15));
 		statusTitle.setPadding(new Insets(15, 0, 10, 0));
 
-		HBox SVInfoPane = new HBox(20);
+		HBox SVInfoPane = new HBox(10);
 		SVInfoPane.setPadding(new Insets(0, 10, 0, 0));
 		// Adding RAM usage of a server
 
@@ -806,5 +818,20 @@ public class RemoteUI extends Application
 				}
 			});
 		}
+	}
+	
+	public void setParsingResult(String[] result)
+	{
+		reqText.setText(result[0]);
+		reqTypeText.setText(result[1]);
+		SVModuleText.setText(result[2]);
+		paramText.setText(result[3]);
+		sIdText.setText(result[4]);
+		sTimeText.setText(result[5]);
+		reqQueryText.setText(result[6]);
+		
+		errTypeText.setText(result[7]);
+		errNameText.setText(result[8]);
+		errTimeText.setText(result[9]);
 	}
 }

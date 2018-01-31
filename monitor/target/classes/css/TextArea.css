@@ -1,12 +1,14 @@
 .text-area {
     -fx-background-color: transparent;
+    -fx-text-fill: burlywood;
+    -fx-font-size: 11;
 }
 
 .text-area .content {
     -fx-background-color: black;
     -fx-background-radius:5;
     -fx-effect: innershadow(three-pass-box, #616161, 8, 0.1, 1, 1);
-
+    -fx-padding: 8;
 }
 
 .viewport {

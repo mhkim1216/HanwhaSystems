@@ -554,7 +554,7 @@ public class RemoteUI extends Application
 		reqQueryText = new TextArea();
 		reqQueryText.getStylesheets().add("/css/TextArea.css");
 		reqQueryText.setPrefRowCount(7);
-//		reqQueryText.setEditable(false);
+		reqQueryText.setEditable(false);
 		reqQueryText.setWrapText(true);
 
 		Label[] ok = new Label[7];

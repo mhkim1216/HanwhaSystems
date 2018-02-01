@@ -22,41 +22,41 @@ public class Parser
 	private DSPLog dspLog;
 	private String rawString;
 	private File log;
-	private final static int refresh=500;
+	private final static int refresh = 500;
 
 	public Parser(BufferedOutputStream bos)
 	{
 		this.bos = bos;
-		dspLog=new DSPLog();
+		dspLog = new DSPLog();
 	}
 
 	public void monitor()
 	{
 		byte[] rawBytes = new byte[32768];
-		long prevFileSize=0;
-		long curFileSize=0;
-		boolean isInit=true;
+		long prevFileSize = 0;
+		long curFileSize = 0;
+		boolean isInit = true;
 
 		try
 		{
 			while (true)
 			{
 				Thread.sleep(refresh);
-				
+
 				log = new File(System.getenv("CATALINA_HOME") + "/eNaviLogs/eNaviService.log");
 				raf = new RandomAccessFile(log, "r");
-				prevFileSize=curFileSize;
-				curFileSize=log.length();
-	
-				if(isInit || prevFileSize==curFileSize)
-				{	
-					isInit=false;
+				prevFileSize = curFileSize;
+				curFileSize = log.length();
+
+				if (isInit || prevFileSize == curFileSize)
+				{
+					isInit = false;
 					continue;
 				}
 				raf.seek(prevFileSize);
 				raf.read(rawBytes);
 				rawString = new String(rawBytes);
-			
+
 				parse();
 			}
 
@@ -91,54 +91,121 @@ public class Parser
 		parseSessionId();
 		parseSessionTime();
 		parseSQL();
-		
-		Gson gson =new Gson();
-		String parsedJson=gson.toJson(dspLog);
+
+		Gson gson = new Gson();
+		String parsedJson = gson.toJson(dspLog);
 		System.out.println(parsedJson);
 		bos.write(parsedJson.getBytes());
 		bos.flush();
 	}
-	
+
 	private void parseRequestor()
 	{
-		
-		
+		try
+		{
+			dspLog.setRequestor(rawString.split("RemoteIpAddress: ")[1].split("; SessionId: ")[0]);
+//			System.out.println(dspLog.getRequestor());
+		}
+		catch(ArrayIndexOutOfBoundsException e)
+		{
+			dspLog.setRequestor("Unknown SV");
+		}
 	}
-	
+
 	private void parseRequestType()
 	{
-		
-		
+		try
+		{
+			dspLog.setReqType(rawString.split("'dispatcherServlet' processing ")[1].split(" request for ")[0].trim());
+//			System.out.println(dspLog.getReqType());
+		}
+		catch(ArrayIndexOutOfBoundsException e)
+		{
+			dspLog.setReqType("Unknown Type");
+		}		
 	}
-	
+
 	private void parseService()
 	{
-		
-		
+		try
+		{
+			String partialString=rawString.split("  - <==")[0];
+			int lastIndex=partialString.lastIndexOf(".");
+			dspLog.setService(partialString.substring(lastIndex+1).trim());
+//			System.out.println(dspLog.getService());
+		}
+		catch(ArrayIndexOutOfBoundsException e)
+		{
+			dspLog.setService("Unknown Service");
+		}
 	}
-	
+
 	private void parseParam()
 	{
+		try
+		{
+			String partialString = rawString.split(" at position ")[0];
 		
-		
+			// GET type
+			if (partialString.contains("?"))
+			{
+				int lastIndex;
+				lastIndex = partialString.lastIndexOf("?");
+				dspLog.setParameter(partialString.substring(lastIndex + 1));
+			}
+			
+			// POST type
+			else
+			{
+				dspLog.setParameter(rawString.split("==> Parameters: ")[1].split("\n")[0]);
+			}
+			
+			// System.out.println(dspLog.getParameter());
+		}
+		catch(Exception e)
+		{
+			dspLog.setParameter("No Parameter");
+		}
 	}
-	
+
 	private void parseSessionId()
 	{
-		
-		
+		try
+		{
+			dspLog.setSessionId(rawString.split("; SessionId: ")[1].split("; Granted Authorities")[0]);
+//			System.out.println(dspLog.getSessionId());
+		}
+		catch(ArrayIndexOutOfBoundsException e)
+		{
+			dspLog.setSessionId("Unknown ID");
+		}
 	}
-	
+
 	private void parseSessionTime()
 	{
-		
-		
+		try
+		{
+			dspLog.setSessionTime(rawString.substring(0, 19));
+//			System.out.println(dspLog.getSessionTime());
+		}
+		catch(Exception e)
+		{
+			dspLog.setSessionTime("Unknown Time");
+		}
 	}
-	
+
 	private void parseSQL()
 	{
-		dspLog.setSql(rawString.split("==>  Preparing: ")[1].split("\n")[0]);
-//		System.out.println(dspLog.getSql());
+		try
+		{
+			dspLog.setSql(rawString.split("==>  Preparing: ")[1].split("\n")[0]);
+			// System.out.println(dspLog.getSql());
+		}
+		catch (ArrayIndexOutOfBoundsException e)
+		{
+			dspLog.setSql("No SQL in Request");
+		}
+
 	}
 
 }

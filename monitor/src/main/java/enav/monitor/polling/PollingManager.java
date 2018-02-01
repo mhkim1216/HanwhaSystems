@@ -8,15 +8,8 @@
 
 package enav.monitor.polling;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import enav.monitor.screen.ErrorTrace;
 import enav.monitor.screen.History;

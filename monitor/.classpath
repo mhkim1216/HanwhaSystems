@@ -27,6 +27,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/DEV/TOOL/git/HanwhaSystems/parser/lib/hyperic-sigar-1.6.4/sigar-bin/lib/sigar.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

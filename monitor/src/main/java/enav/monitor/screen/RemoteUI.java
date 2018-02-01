@@ -38,6 +38,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.DropShadow;
@@ -127,6 +128,7 @@ public class RemoteUI extends Application
 
 		manager = PollingManager.getInstance(this, history, logTrace, errorTrace);
 		// add codes for running manager's thread in background
+//		manager.monitor("192.168.0.184", port);
 		manager.monitor("127.0.0.1", port);
 	}
 
@@ -518,34 +520,41 @@ public class RemoteUI extends Application
 		reqText.getStylesheets().add("/css/TextField.css");
 		reqText.setPrefColumnCount(18);
 		reqText.setEditable(false);
+		reqText.setAlignment(Pos.CENTER);
 		reqTypeText = new TextField();
 		reqTypeText.getStylesheets().add("/css/TextField.css");
 		reqTypeText.setPrefColumnCount(18);
 		reqTypeText.setEditable(false);
+		reqTypeText.setAlignment(Pos.CENTER);
 		SVModuleText = new TextField();
 		SVModuleText.getStylesheets().add("/css/TextField.css");
 		SVModuleText.setPrefColumnCount(18);
 		SVModuleText.setEditable(false);
+		SVModuleText.setAlignment(Pos.CENTER);
 		paramText = new TextField();
 		paramText.getStylesheets().add("/css/TextField.css");
 		paramText.setPrefColumnCount(18);
-		paramText.setEditable(false);
+//		paramText.setEditable(false);
+//		paramText.setAlignment(Pos.CENTER);
 		sIdText = new TextField();
 		sIdText.getStylesheets().add("/css/TextField.css");
 		sIdText.setPrefColumnCount(18);
-		sIdText.setEditable(false);
+//		sIdText.setEditable(false);
+//		sIdText.setAlignment(Pos.CENTER);
 		sTimeText = new TextField();
 		sTimeText.getStylesheets().add("/css/TextField.css");
 		sTimeText.setPrefColumnCount(18);
 		sTimeText.setEditable(false);
+		sTimeText.setAlignment(Pos.CENTER);
 		tempSlotText = new TextField();
 		tempSlotText.getStylesheets().add("/css/TextField.css");
 		tempSlotText.setPrefColumnCount(18);
 		tempSlotText.setEditable(false);
+		tempSlotText.setAlignment(Pos.CENTER);
 		reqQueryText = new TextArea();
 		reqQueryText.getStylesheets().add("/css/TextArea.css");
 		reqQueryText.setPrefRowCount(7);
-		reqQueryText.setEditable(false);
+//		reqQueryText.setEditable(false);
 		reqQueryText.setWrapText(true);
 
 		Label[] ok = new Label[7];
@@ -826,6 +835,10 @@ public class RemoteUI extends Application
 		reqTypeText.setText(result[1]);
 		SVModuleText.setText(result[2]);
 		paramText.setText(result[3]);
+		if(paramText.getText().contains("="))
+			paramText.setAlignment(Pos.CENTER);
+		else
+			paramText.setAlignment(Pos.CENTER_LEFT);
 		sIdText.setText(result[4]);
 		sTimeText.setText(result[5]);
 		reqQueryText.setText(result[6]);

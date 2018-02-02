@@ -3,6 +3,7 @@ package enav.monitor.polling;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import com.google.gson.JsonObject;
@@ -17,6 +18,7 @@ class ResourceThread extends Thread
 	private BufferedInputStream bis;
 	private BufferedOutputStream bos;
 	private int refresh;
+	private String serverIP;
 
 	ResourceThread(String ip, int port, RemoteUI rmt, int refresh)
 	{
@@ -30,6 +32,7 @@ class ResourceThread extends Thread
 			bis = new BufferedInputStream(resourceSocket.getInputStream());
 			bos = new BufferedOutputStream(resourceSocket.getOutputStream());
 			resourceSocket.sendSocketId(bos);
+			serverIP=resourceSocket.getInetAddress().getHostAddress();
 //			System.out.println("Send resource bit");
 		}
 		catch (UnknownHostException e)
@@ -59,7 +62,11 @@ class ResourceThread extends Thread
 		{
 			try
 			{
+				if(!resourceSocket.isConnected())
+					throw new SocketException();
+				
 				bis.read(resource);
+
 				jsonResource = new String(resource);
 				jsonResource = jsonResource.substring(0, jsonResource.lastIndexOf("}") + 1);
 
@@ -83,19 +90,26 @@ class ResourceThread extends Thread
 
 				used = jsonObject.get("efficiency").getAsDouble();
 				rmt.setResourceStatus(used * 100, 0, "eff");
-
+		
 				Thread.sleep(refresh);
 
 				resource = new byte[1024];
 			}
 			catch (IOException e)
 			{
+				rmt.setDisconnected();
 				e.printStackTrace();
+				break;
 			}
 			catch (InterruptedException e)
 			{
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public String getServerIP()
+	{
+		return serverIP;
 	}
 }

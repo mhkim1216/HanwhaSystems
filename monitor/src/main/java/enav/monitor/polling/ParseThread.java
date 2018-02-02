@@ -3,6 +3,7 @@ package enav.monitor.polling;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import com.google.gson.JsonObject;
@@ -17,6 +18,7 @@ class ParseThread extends Thread
 	private BufferedInputStream bis;
 	private BufferedOutputStream bos;
 	private int refresh;
+	private String serverIP;
 
 	ParseThread(String ip, int port, RemoteUI rmt, int refresh)
 	{
@@ -30,6 +32,7 @@ class ParseThread extends Thread
 			bis = new BufferedInputStream(parseSocket.getInputStream());
 			bos = new BufferedOutputStream(parseSocket.getOutputStream());
 			parseSocket.sendSocketId(bos);
+			serverIP=parseSocket.getInetAddress().getHostAddress();
 			// System.out.println("Send parse bit");
 		}
 		catch (UnknownHostException e)
@@ -70,7 +73,11 @@ class ParseThread extends Thread
 		{
 			try
 			{
+				if(!parseSocket.isConnected())
+					throw new SocketException();
+				
 				bis.read(jsonString);
+				rmt.setOpStatus("RUN");
 				jsonResource = new String(jsonString);
 				jsonResource = jsonResource.substring(0, jsonResource.lastIndexOf("}") + 1);
 
@@ -90,14 +97,28 @@ class ParseThread extends Thread
 				result[9] = jsonObject.get("errTime").getAsString();
 
 				rmt.setParsingResult(result);
+				
+				Thread.sleep(1500);
+				rmt.setOpStatus("IDLE");
 
 				jsonString = new byte[1024];
 			}
 			catch (IOException e)
 			{
+				rmt.setDisconnected();
+				e.printStackTrace();
+				break;
+			}
+			catch(InterruptedException e)
+			{
 				e.printStackTrace();
 			}
 		}
 
+	}
+	
+	public String getServerIP()
+	{
+		return serverIP;
 	}
 }

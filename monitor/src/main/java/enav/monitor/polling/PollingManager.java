@@ -58,6 +58,13 @@ public class PollingManager
 		ResourceThread rThread=new ResourceThread(ip, port, rmt, 1000);
 		rThread.start();
 		
+		String pServerIP=pThread.getServerIP();
+		String rServerIP=rThread.getServerIP();
+		
+		if(pServerIP.equals(rServerIP))
+			if(pServerIP!=null && rServerIP!=null)
+				rmt.setConnected(pServerIP);
+		
 		// test codes. Requesting Row-Pane in History tab.
 		test("client1");
 		test("client1");

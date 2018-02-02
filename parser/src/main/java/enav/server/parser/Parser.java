@@ -91,6 +91,8 @@ public class Parser
 		parseSessionId();
 		parseSessionTime();
 		parseSQL();
+		parseException();
+		// parseError();
 
 		Gson gson = new Gson();
 		String parsedJson = gson.toJson(dspLog);
@@ -104,9 +106,9 @@ public class Parser
 		try
 		{
 			dspLog.setRequestor(rawString.split("RemoteIpAddress: ")[1].split("; SessionId: ")[0]);
-//			System.out.println(dspLog.getRequestor());
+			// System.out.println(dspLog.getRequestor());
 		}
-		catch(ArrayIndexOutOfBoundsException e)
+		catch (ArrayIndexOutOfBoundsException e)
 		{
 			dspLog.setRequestor("Unknown SV");
 		}
@@ -117,24 +119,24 @@ public class Parser
 		try
 		{
 			dspLog.setReqType(rawString.split("'dispatcherServlet' processing ")[1].split(" request for ")[0].trim());
-//			System.out.println(dspLog.getReqType());
+			// System.out.println(dspLog.getReqType());
 		}
-		catch(ArrayIndexOutOfBoundsException e)
+		catch (ArrayIndexOutOfBoundsException e)
 		{
 			dspLog.setReqType("Unknown Type");
-		}		
+		}
 	}
 
 	private void parseService()
 	{
 		try
 		{
-			String partialString=rawString.split("  - <==")[0];
-			int lastIndex=partialString.lastIndexOf(".");
-			dspLog.setService(partialString.substring(lastIndex+1).trim());
-//			System.out.println(dspLog.getService());
+			String partialString = rawString.split("  - <==")[0];
+			int lastIndex = partialString.lastIndexOf(".");
+			dspLog.setService(partialString.substring(lastIndex + 1).trim());
+			// System.out.println(dspLog.getService());
 		}
-		catch(ArrayIndexOutOfBoundsException e)
+		catch (ArrayIndexOutOfBoundsException e)
 		{
 			dspLog.setService("Unknown Service");
 		}
@@ -145,7 +147,7 @@ public class Parser
 		try
 		{
 			String partialString = rawString.split(" at position ")[0];
-		
+
 			// GET type
 			if (partialString.contains("?"))
 			{
@@ -153,16 +155,16 @@ public class Parser
 				lastIndex = partialString.lastIndexOf("?");
 				dspLog.setParameter(partialString.substring(lastIndex + 1));
 			}
-			
+
 			// POST type
 			else
 			{
 				dspLog.setParameter(rawString.split("==> Parameters: ")[1].split("\n")[0]);
 			}
-			
+
 			// System.out.println(dspLog.getParameter());
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			dspLog.setParameter("No Parameter");
 		}
@@ -173,9 +175,9 @@ public class Parser
 		try
 		{
 			dspLog.setSessionId(rawString.split("; SessionId: ")[1].split("; Granted Authorities")[0]);
-//			System.out.println(dspLog.getSessionId());
+			// System.out.println(dspLog.getSessionId());
 		}
-		catch(ArrayIndexOutOfBoundsException e)
+		catch (ArrayIndexOutOfBoundsException e)
 		{
 			dspLog.setSessionId("Unknown ID");
 		}
@@ -186,9 +188,9 @@ public class Parser
 		try
 		{
 			dspLog.setSessionTime(rawString.substring(0, 19));
-//			System.out.println(dspLog.getSessionTime());
+			// System.out.println(dspLog.getSessionTime());
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			dspLog.setSessionTime("Unknown Time");
 		}
@@ -206,6 +208,39 @@ public class Parser
 			dspLog.setSql("No SQL in Request");
 		}
 
+	}
+
+	private void parseException()
+	{
+		if (rawString.contains("Exception: "))
+		{
+			try
+			{
+				String partialString = rawString.split("Exception: ")[0];
+
+				int lastIndex;
+				lastIndex = partialString.lastIndexOf(".");
+				dspLog.setErrName(partialString.substring(lastIndex + 1) + "Exception");
+				dspLog.setErrType("Exception");
+				// System.out.println(dspLog.getParameter());
+			}
+			catch (Exception e)
+			{
+				dspLog.setErrName("Unidentified");
+				dspLog.setErrType("Unidentified");
+			}
+		}
+		else
+		{	
+			dspLog.setErrName("No Error");
+			dspLog.setErrType("No Error");
+			dspLog.setErrTime("No Error");
+		}
+	}
+
+	private void parseError()
+	{
+		// To Do
 	}
 
 }

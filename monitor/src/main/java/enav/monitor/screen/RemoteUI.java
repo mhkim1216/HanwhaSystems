@@ -1,6 +1,6 @@
 /**
  * Created 01.02.2018.
- * Last Modified 01.28.2018.
+ * Last Modified 02.02.2018.
  * Layout for overview screen has been built using JavaFX.
  * 
  * 
@@ -16,13 +16,12 @@ import java.util.Calendar;
 import java.util.List;
 
 import enav.monitor.polling.PollingManager;
-
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.Gauge.SkinType;
 import eu.hansolo.medusa.GaugeBuilder;
 import eu.hansolo.medusa.Section;
-
-import javafx.application.*;
+import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -31,21 +30,37 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.stage.*;
-import javafx.scene.*;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.TextAlignment;
-import javafx.scene.control.*;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class RemoteUI extends Application
 {
@@ -78,12 +93,14 @@ public class RemoteUI extends Application
 	private Gauge netGauge;
 	private Gauge summaryGauge;
 	private String ip;
-	private final static int port=1216;
+	private final static int port = 1216;
 	private double stageX;
 	private double stageY;
-	private double mouseX;	// previous X position
-	private double mouseY;	// previous Y position
-	
+	private double mouseX; // previous X position
+	private double mouseY; // previous Y position
+	private Label serverInfo;
+	Label opStatusLabel;
+
 	TextField reqText;
 	TextField reqTypeText;
 	TextField SVModuleText;
@@ -92,12 +109,12 @@ public class RemoteUI extends Application
 	TextField sTimeText;
 	TextField tempSlotText;
 	TextArea reqQueryText;
-	
+
 	TextField errTypeText;
 	TextField errNameText;
 	TextField errTimeText;
 
-	private String serverIp = "Not Connected";
+	private String status = "Not Connected";
 
 	public RemoteUI()
 	{
@@ -128,7 +145,7 @@ public class RemoteUI extends Application
 
 		manager = PollingManager.getInstance(this, history, logTrace, errorTrace);
 		// add codes for running manager's thread in background
-//		manager.monitor("192.168.0.184", port);
+		// manager.monitor("192.168.0.184", port);
 		manager.monitor("127.0.0.1", port);
 	}
 
@@ -151,7 +168,7 @@ public class RemoteUI extends Application
 
 	private void setScene()
 	{
-		scene = new Scene(rPane, 1280, 775);
+		scene = new Scene(rPane, 1280, 785);
 		// scene.setFill(Color.rgb(0, 33, 63, 1));
 	}
 
@@ -162,8 +179,8 @@ public class RemoteUI extends Application
 		primaryStage.setTitle("eNavigation DSP Monitor");
 		primaryStage.setScene(scene);
 		primaryStage.setAlwaysOnTop(true);
-		stageX=primaryStage.getX();
-		stageY=primaryStage.getY();
+		stageX = primaryStage.getX();
+		stageY = primaryStage.getY();
 		primaryStage.show();
 	}
 
@@ -221,7 +238,7 @@ public class RemoteUI extends Application
 		rPane.setStyle("-fx-background-color: " + rootColor + ";");
 		MenuBar menuBar = new MenuBar();
 		menuBar.setStyle("-fx-background-color: " + rootColor + ";");
-		menuBar.setPadding(new Insets(0, 0, 0, 10));
+		menuBar.setPadding(new Insets(0, 0, 0, 20));
 		ArrayList<Menu> menus = new ArrayList<Menu>();
 		String[] menuList = new String[] { "File", "Home", "Edit", "Search", "Setting", "Window", "Help" };
 		Menu menu;
@@ -236,23 +253,25 @@ public class RemoteUI extends Application
 		}
 		menuBar.getMenus().addAll(menus);
 		Label titleLabel = new Label("Remote Diagnostic System 0.1 ");
-		
-		titleLabel.setOnMousePressed(new EventHandler<MouseEvent>() {
-			public void handle(MouseEvent e)
-			{
-				mouseX=e.getX();
-				mouseY=e.getY();
-			}		
-		});
 
-		titleLabel.setOnMouseReleased(new EventHandler<MouseEvent>() {
+		titleLabel.setOnMousePressed(new EventHandler<MouseEvent>()
+		{
 			public void handle(MouseEvent e)
 			{
-				primaryStage.setX(primaryStage.getX()+(e.getX()-mouseX));
-				primaryStage.setY(primaryStage.getY()+(e.getY()-mouseY));
+				mouseX = e.getX();
+				mouseY = e.getY();
 			}
 		});
-		
+
+		titleLabel.setOnMouseReleased(new EventHandler<MouseEvent>()
+		{
+			public void handle(MouseEvent e)
+			{
+				primaryStage.setX(primaryStage.getX() + (e.getX() - mouseX));
+				primaryStage.setY(primaryStage.getY() + (e.getY() - mouseY));
+			}
+		});
+
 		titleLabel.setStyle("-fx-text-fill: white;");
 		titleLabel.setFont(new Font(18));
 		titleLabel.setPadding(new Insets(10));
@@ -344,7 +363,7 @@ public class RemoteUI extends Application
 		VBox leftPane = new VBox();
 		leftPane.setPadding(new Insets(10, 5, 0, 20));
 
-		Label serverInfo = new Label("[Server Info] - " + serverIp);
+		serverInfo = new Label("[Server Info] - " + status);
 		serverInfo.setTextFill(Color.BURLYWOOD);
 		serverInfo.setFont(new Font(15));
 		serverInfo.setPadding(new Insets(0, 0, -23, 0));
@@ -369,19 +388,11 @@ public class RemoteUI extends Application
 		summaryGauge.addSection(new Section(90, 100, Color.rgb(232, 245, 233)));
 
 		HBox opTitle = new HBox();
-		opTitle.setPadding(new Insets(2, 0, 7, 0));
+		opTitle.setPadding(new Insets(-3, 0, 11, 0));
 
-		String opStatus = new String("IDLE");
-		Label opStatusLabel = new Label(opStatus);
-		// opStatusLabel.setStyle("-fx-font-weight: bold;");
+		opStatusLabel = new Label("IDLE");
+		opStatusLabel.setTextFill(Color.rgb(255, 255, 0));
 		opStatusLabel.setFont(new Font(15));
-
-		if (opStatus.equals("IDLE"))
-			opStatusLabel.setTextFill(Color.rgb(255, 235, 59));
-		else if (opStatus.equals("RUN"))
-			opStatusLabel.setTextFill(Color.rgb(76, 175, 80));
-		else
-			opStatusLabel.setTextFill(Color.rgb(244, 67, 54));
 
 		Label opInfo = new Label("[Operation] - ");
 		opInfo.setTextFill(Color.BURLYWOOD);
@@ -417,14 +428,17 @@ public class RemoteUI extends Application
 		errTypeText.getStylesheets().add("/css/TextField.css");
 		errTypeText.setPrefColumnCount(12);
 		errTypeText.setEditable(false);
+		errTypeText.setAlignment(Pos.CENTER);
 		errNameText = new TextField();
 		errNameText.getStylesheets().add("/css/TextField.css");
 		errNameText.setPrefColumnCount(12);
 		errNameText.setEditable(false);
+		errNameText.setAlignment(Pos.CENTER);
 		errTimeText = new TextField();
 		errTimeText.getStylesheets().add("/css/TextField.css");
 		errTimeText.setPrefColumnCount(12);
 		errTimeText.setEditable(false);
+		errTimeText.setAlignment(Pos.CENTER);
 
 		errType.getChildren().addAll(errTypeLabel, errTypeText);
 		errName.getChildren().addAll(errNameLabel, errNameText);
@@ -515,7 +529,7 @@ public class RemoteUI extends Application
 		reqQueryLabel.setMinWidth(Region.USE_PREF_SIZE);
 		reqQueryLabel.setPrefWidth(240);
 		reqQueryLabel.setFont(new Font(14));
-		
+
 		reqText = new TextField();
 		reqText.getStylesheets().add("/css/TextField.css");
 		reqText.setPrefColumnCount(18);
@@ -534,13 +548,13 @@ public class RemoteUI extends Application
 		paramText = new TextField();
 		paramText.getStylesheets().add("/css/TextField.css");
 		paramText.setPrefColumnCount(18);
-//		paramText.setEditable(false);
-//		paramText.setAlignment(Pos.CENTER);
+		// paramText.setEditable(false);
+		// paramText.setAlignment(Pos.CENTER);
 		sIdText = new TextField();
 		sIdText.getStylesheets().add("/css/TextField.css");
 		sIdText.setPrefColumnCount(18);
-//		sIdText.setEditable(false);
-//		sIdText.setAlignment(Pos.CENTER);
+		// sIdText.setEditable(false);
+		// sIdText.setAlignment(Pos.CENTER);
 		sTimeText = new TextField();
 		sTimeText.getStylesheets().add("/css/TextField.css");
 		sTimeText.setPrefColumnCount(18);
@@ -553,7 +567,7 @@ public class RemoteUI extends Application
 		tempSlotText.setAlignment(Pos.CENTER);
 		reqQueryText = new TextArea();
 		reqQueryText.getStylesheets().add("/css/TextArea.css");
-		reqQueryText.setPrefRowCount(7);
+		reqQueryText.setPrefRowCount(8);
 		reqQueryText.setEditable(false);
 		reqQueryText.setWrapText(true);
 
@@ -785,7 +799,7 @@ public class RemoteUI extends Application
 			{
 				public void run()
 				{
-					cpuGauge.setMaxValue(cpuTotal*100);
+					cpuGauge.setMaxValue(cpuTotal * 100);
 					cpuGauge.setValue(cpuUsed * 100);
 				}
 			});
@@ -828,23 +842,79 @@ public class RemoteUI extends Application
 			});
 		}
 	}
-	
+
 	public void setParsingResult(String[] result)
 	{
 		reqText.setText(result[0]);
 		reqTypeText.setText(result[1]);
 		SVModuleText.setText(result[2]);
 		paramText.setText(result[3]);
-		if(paramText.getText().contains("="))
+
+		// GET or short POST
+		if (result[3].contains("=") || result[3].contains("No Parameter")
+				|| result[3].length() > 20)
 			paramText.setAlignment(Pos.CENTER);
+		// long POST
 		else
 			paramText.setAlignment(Pos.CENTER_LEFT);
+
 		sIdText.setText(result[4]);
+		if(result[4].equals("null"))
+			sIdText.setAlignment(Pos.CENTER);
+			
 		sTimeText.setText(result[5]);
 		reqQueryText.setText(result[6]);
-		
+
 		errTypeText.setText(result[7]);
+		if(result[7].equals("No Error"))
+			errTypeText.setStyle("-fx-text-fill: #0e9b6c;");
+		
 		errNameText.setText(result[8]);
+		if(result[8].equals("No Error"))
+			errNameText.setStyle("-fx-text-fill: #0e9b6c;");
+		
 		errTimeText.setText(result[9]);
+		if(result[9].equals("No Error"))
+			errTimeText.setStyle("-fx-text-fill: #0e9b6c;");
+	}
+	
+	public void setDisconnected()
+	{
+		status="Disconnected";
+		serverInfo.setText("[Server Info] - " + status);
+	}
+	
+	public void setConnected(String serverIP)
+	{
+		status=serverIP;
+		serverInfo.setText("[Server Info] - " + status);
+	}
+	
+	public void setOpStatus(String status)
+	{
+		if(status.equals("IDLE"))
+		{
+			opStatusLabel.setTextFill(Color.rgb(255, 255, 0));
+			{
+				Platform.runLater(new Runnable() {
+
+					public void run()
+					{
+						opStatusLabel.setText("IDLE");
+					}
+				});
+			}
+		}
+		else if(status.equals("RUN"))
+		{
+			opStatusLabel.setTextFill(Color.rgb(14, 155, 108));
+			Platform.runLater(new Runnable() {
+
+				public void run()
+				{
+					opStatusLabel.setText("RUN");
+				}
+			});
+		}
 	}
 }

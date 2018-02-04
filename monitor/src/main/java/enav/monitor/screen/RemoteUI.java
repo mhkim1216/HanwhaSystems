@@ -851,15 +851,14 @@ public class RemoteUI extends Application
 		paramText.setText(result[3]);
 
 		// GET or short POST
-		if (result[3].contains("=") || result[3].contains("No Parameter")
-				|| result[3].length() > 20)
+		if (result[3].length() < 21)
 			paramText.setAlignment(Pos.CENTER);
 		// long POST
 		else
 			paramText.setAlignment(Pos.CENTER_LEFT);
 
 		sIdText.setText(result[4]);
-		if(result[4].equals("null"))
+		if(result[4].equals("null") || result[4].equals("Unknown ID"))
 			sIdText.setAlignment(Pos.CENTER);
 			
 		sTimeText.setText(result[5]);

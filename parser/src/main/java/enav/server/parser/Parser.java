@@ -84,6 +84,7 @@ public class Parser
 
 	private void parse() throws IOException
 	{
+		sendLine();
 		parseRequestor();
 		parseRequestType();
 		parseService();
@@ -241,6 +242,11 @@ public class Parser
 	private void parseError()
 	{
 		// To Do
+	}
+	
+	private void sendLine()
+	{
+		
 	}
 
 }

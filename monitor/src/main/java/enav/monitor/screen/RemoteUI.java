@@ -99,27 +99,30 @@ public class RemoteUI extends Application
 	private double mouseX; // previous X position
 	private double mouseY; // previous Y position
 	private Label serverInfo;
-	Label opStatusLabel;
+	private Label opStatusLabel;
 
-	TextField reqText;
-	TextField reqTypeText;
-	TextField SVModuleText;
-	TextField paramText;
-	TextField sIdText;
-	TextField sTimeText;
-	TextField tempSlotText;
-	TextArea reqQueryText;
+	private TextField reqText;
+	private TextField reqTypeText;
+	private TextField SVModuleText;
+	private TextField paramText;
+	private TextField sIdText;
+	private TextField sTimeText;
+	private TextField tempSlotText;
+	private TextArea reqQueryText;
 
-	TextField errTypeText;
-	TextField errNameText;
-	TextField errTimeText;
+	private TextField errTypeText;
+	private TextField errNameText;
+	private TextField errTimeText;
+
+	private TextArea allLog;
+	private StringBuilder sb;
 
 	private String status = "Not Connected";
 
 	public RemoteUI()
 	{
 		efficiency = 0;
-
+		sb = new StringBuilder();
 	}
 
 	public static void main(String[] args)
@@ -602,9 +605,10 @@ public class RemoteUI extends Application
 		logTitle.setTextFill(Color.BURLYWOOD);
 		logTitle.setFont(new Font(15));
 		logTitle.setPadding(new Insets(0, 0, 13, 0));
-		TextArea logArea = new TextArea();
-		logArea.getStylesheets().add("/css/TextArea.css");
-		logArea.setPrefRowCount(10);
+		allLog = new TextArea();
+		allLog.getStylesheets().add("/css/TextArea.css");
+		allLog.setPrefRowCount(10);
+		allLog.setWrapText(true);
 
 		Label statusTitle = new Label("[Server Status]");
 		statusTitle.setTextFill(Color.BURLYWOOD);
@@ -633,7 +637,7 @@ public class RemoteUI extends Application
 		SVInfoPane.getChildren().add(getGauge("CPU LOAD", Color.rgb(229, 115, 115), cpuGauge, 0));
 		SVInfoPane.getChildren().add(getGauge("DISK USAGE", Color.rgb(0, 188, 212), diskGauge, 0));
 		SVInfoPane.getChildren().add(getGauge("NET TRAFFIC", Color.rgb(76, 175, 80), netGauge, 0));
-		rightPane.getChildren().addAll(logTitle, logArea, statusTitle, SVInfoPane);
+		rightPane.getChildren().addAll(logTitle, allLog, statusTitle, SVInfoPane);
 
 		bPane.setRight(rightPane);
 	}
@@ -685,6 +689,7 @@ public class RemoteUI extends Application
 		Label time = new Label();
 		time.setTextFill(Color.BURLYWOOD);
 		time.setPadding(new Insets(0, 0, 10, 941));
+		
 		class TimeThread extends Thread
 		{
 			Label time;
@@ -843,11 +848,15 @@ public class RemoteUI extends Application
 		}
 	}
 
-	public void setParsingResult(String[] result)
+	public void setParsingResult(final String[] result)
 	{
 		reqText.setText(result[0]);
 		reqTypeText.setText(result[1]);
+
 		SVModuleText.setText(result[2]);
+		if (result[2].length() < 21)
+			paramText.setAlignment(Pos.CENTER);
+
 		paramText.setText(result[3]);
 
 		// GET or short POST
@@ -858,44 +867,78 @@ public class RemoteUI extends Application
 			paramText.setAlignment(Pos.CENTER_LEFT);
 
 		sIdText.setText(result[4]);
-		if(result[4].equals("null") || result[4].equals("Unknown ID"))
+		if (result[4].equals("null") || result[4].equals("Unknown ID"))
 			sIdText.setAlignment(Pos.CENTER);
-			
+
 		sTimeText.setText(result[5]);
 		reqQueryText.setText(result[6]);
 
 		errTypeText.setText(result[7]);
-		if(result[7].equals("No Error"))
+		if (result[7].equals("No Error"))
 			errTypeText.setStyle("-fx-text-fill: #0e9b6c;");
-		
+
 		errNameText.setText(result[8]);
-		if(result[8].equals("No Error"))
+		if (result[8].equals("No Error"))
 			errNameText.setStyle("-fx-text-fill: #0e9b6c;");
-		
+
 		errTimeText.setText(result[9]);
-		if(result[9].equals("No Error"))
+		if (result[9].equals("No Error"))
 			errTimeText.setStyle("-fx-text-fill: #0e9b6c;");
+
+		// Display all logs line by line.
+		new Thread()
+		{
+			String[] str = result[10].split("\r\n");
+			int i = 0;
+
+			@Override
+			public void run()
+			{
+
+				for (i = 0; i < str.length; ++i)
+				{
+					Platform.runLater(new Runnable()
+					{
+						public void run()
+						{
+							allLog.setText(sb.append(str[i]).append("\r\n\r\n").toString());
+						};
+
+					});
+					try
+					{
+						Thread.sleep(100);
+					}
+					catch (InterruptedException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}.start();
 	}
-	
+
 	public void setDisconnected()
 	{
-		status="Disconnected";
+		status = "Disconnected";
 		serverInfo.setText("[Server Info] - " + status);
 	}
-	
+
 	public void setConnected(String serverIP)
 	{
-		status=serverIP;
+		status = serverIP;
 		serverInfo.setText("[Server Info] - " + status);
 	}
-	
+
 	public void setOpStatus(String status)
 	{
-		if(status.equals("IDLE"))
+		if (status.equals("IDLE"))
 		{
 			opStatusLabel.setTextFill(Color.rgb(255, 255, 0));
 			{
-				Platform.runLater(new Runnable() {
+				Platform.runLater(new Runnable()
+				{
 
 					public void run()
 					{
@@ -904,10 +947,11 @@ public class RemoteUI extends Application
 				});
 			}
 		}
-		else if(status.equals("RUN"))
+		else if (status.equals("RUN"))
 		{
 			opStatusLabel.setTextFill(Color.rgb(14, 155, 108));
-			Platform.runLater(new Runnable() {
+			Platform.runLater(new Runnable()
+			{
 
 				public void run()
 				{

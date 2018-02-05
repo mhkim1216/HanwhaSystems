@@ -21,14 +21,25 @@ public class DSPLog
 	private String errType="";
 	private String errName="";
 	private String errTime="";
-	
+	private String allLog="";
+
 	public DSPLog()
 	{
 		
 		
 		
 	}
+	
+	public String getAllLog()
+	{
+		return allLog;
+	}
 
+	public void setAllLog(String allLog)
+	{
+		this.allLog = allLog;
+	}
+	
 	public String getRequestor()
 	{
 		return requestor;

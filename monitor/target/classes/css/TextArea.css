@@ -14,3 +14,15 @@
 .viewport {
     -fx-background-color: transparent;
 }
+
+.thumb {
+	-fx-background-color: #dec85f;
+}
+
+.increment-button {
+	-fx-background-color: #dec85f;
+}
+
+ .decrement-button {
+	-fx-background-color: #dec85f;
+}

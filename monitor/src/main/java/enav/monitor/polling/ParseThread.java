@@ -50,12 +50,12 @@ class ParseThread extends Thread
 	@Override
 	public void run()
 	{
-		byte[] jsonString = new byte[1024];
+		byte[] jsonString = new byte[20000];
 		String jsonResource = null;
 		JsonParser parser = new JsonParser();
 		JsonObject jsonObject;
 
-		String[] result=new String[10];
+		String[] result=new String[11];
 		
 //		result[0] : String requestor;
 //		result[1] : String reqType;
@@ -68,7 +68,8 @@ class ParseThread extends Thread
 //		result[7] : String errType;
 //		result[8] : String errName;
 //		result[9] : String errTime;
-
+//		result[10]: String allLog;
+		
 		while (true)
 		{
 			try
@@ -81,7 +82,7 @@ class ParseThread extends Thread
 				jsonResource = new String(jsonString);
 				jsonResource = jsonResource.substring(0, jsonResource.lastIndexOf("}") + 1);
 
-				// System.out.println(jsonResource);
+//				System.out.println(jsonResource);
 
 				jsonObject = parser.parse(jsonResource).getAsJsonObject();
 
@@ -95,13 +96,14 @@ class ParseThread extends Thread
 				result[7] = jsonObject.get("errType").getAsString();
 				result[8] = jsonObject.get("errName").getAsString();
 				result[9] = jsonObject.get("errTime").getAsString();
+				result[10] = jsonObject.get("allLog").getAsString();
 
 				rmt.setParsingResult(result);
 				
-				Thread.sleep(1500);
+				Thread.sleep(1500);	// time to change status from run to idle
 				rmt.setOpStatus("IDLE");
 
-				jsonString = new byte[1024];
+				jsonString = new byte[32768];
 			}
 			catch (IOException e)
 			{

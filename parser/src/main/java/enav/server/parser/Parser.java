@@ -32,7 +32,7 @@ public class Parser
 
 	public void monitor()
 	{
-		byte[] rawBytes = new byte[32768];
+		byte[] rawBytes = new byte[20000];
 		long prevFileSize = 0;
 		long curFileSize = 0;
 		boolean isInit = true;
@@ -55,7 +55,7 @@ public class Parser
 				}
 				raf.seek(prevFileSize);
 				raf.read(rawBytes);
-				rawString = new String(rawBytes);
+				rawString = new String(rawBytes).trim();
 
 				parse();
 			}
@@ -97,7 +97,7 @@ public class Parser
 
 		Gson gson = new Gson();
 		String parsedJson = gson.toJson(dspLog);
-		System.out.println(parsedJson);
+//		System.out.println(parsedJson);
 		bos.write(parsedJson.getBytes());
 		bos.flush();
 	}
@@ -244,9 +244,9 @@ public class Parser
 		// To Do
 	}
 	
-	private void sendLine()
+	private void sendLine() throws IOException
 	{
-		
+		dspLog.setAllLog(rawString);
 	}
 
 }

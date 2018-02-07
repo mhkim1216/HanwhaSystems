@@ -68,6 +68,8 @@ public class RemoteUI extends Application
 	private TabPane tPane;
 	private BorderPane bPane;
 	private VBox rPane;
+	private StackPane tvPane;
+	private HBox verPane;
 	private Scene scene;
 	private Thread timeThread;
 	private String rootColor = "#1b221b";
@@ -142,8 +144,8 @@ public class RemoteUI extends Application
 	{
 		setBorderPane();
 		setTabPane();
-		setRootPane();
 		buildVersionPane();
+		setRootPane();
 		setScene();
 		setStage(primaryStage);
 
@@ -190,6 +192,8 @@ public class RemoteUI extends Application
 
 	private void setTabPane()
 	{
+		tvPane=new StackPane();
+		
 		// create another tabs
 		hPane = getHistory();
 		logPane = getLogTrace();
@@ -234,6 +238,7 @@ public class RemoteUI extends Application
 			tabs.add(tab);
 		}
 		tPane.getTabs().addAll(tabs);
+		tvPane.getChildren().add(tPane);
 	}
 
 	private void setRootPane()
@@ -352,15 +357,13 @@ public class RemoteUI extends Application
 		titleBar.getChildren().add(titleLabel);
 		titleBar.getChildren().add(imageView);
 		titleBar.getChildren().add(titleBarButtons);
-		rPane.getChildren().add(titleBar);
-		rPane.getChildren().add(menuBar);
-		rPane.getChildren().add(tPane);
+		
+		rPane.getChildren().addAll(titleBar, menuBar, tvPane);
 	}
 
 	private void buildVersionPane()
 	{
-		AnchorPane verPane = new AnchorPane();
-		HBox verList = new HBox(10);
+		verPane = new HBox(10);
 
 		FileInputStream fis = null;
 
@@ -385,57 +388,57 @@ public class RemoteUI extends Application
 			tomcatImage = new Image(fis);
 			fis.close();
 			tomcatIV = new ImageView(tomcatImage);
-			tomcatIV.setFitHeight(50);
-			tomcatIV.setFitWidth(200);
+			tomcatIV.setFitHeight(20);
+			tomcatIV.setFitWidth(100);
 			tomcatIV.setPreserveRatio(true);
 
 			fis = new FileInputStream("src/main/resources/images/postgres.png");
 			postgresImage = new Image(fis);
 			fis.close();
 			postgresIV = new ImageView(postgresImage);
-			postgresIV.setFitHeight(50);
-			postgresIV.setFitWidth(200);
+			postgresIV.setFitHeight(20);
+			postgresIV.setFitWidth(100);
 			postgresIV.setPreserveRatio(true);
 
 			fis = new FileInputStream("src/main/resources/images/spring.png");
 			springImage = new Image(fis);
 			fis.close();
 			springIV = new ImageView(springImage);
-			springIV.setFitHeight(50);
-			springIV.setFitWidth(200);
+			springIV.setFitHeight(20);
+			springIV.setFitWidth(100);
 			springIV.setPreserveRatio(true);
 
 			fis = new FileInputStream("src/main/resources/images/restapi.png");
 			restapiImage = new Image(fis);
 			fis.close();
 			restapiIV = new ImageView(restapiImage);
-			restapiIV.setFitHeight(50);
-			restapiIV.setFitWidth(200);
+			restapiIV.setFitHeight(20);
+			restapiIV.setFitWidth(100);
 			restapiIV.setPreserveRatio(true);
 
 			fis = new FileInputStream("src/main/resources/images/java.png");
 			javaImage = new Image(fis);
 			fis.close();
 			javaIV = new ImageView(javaImage);
-			javaIV.setFitHeight(50);
+			javaIV.setFitHeight(20);
 			javaIV.setFitWidth(200);
 			javaIV.setPreserveRatio(true);
 
-//			fis = new FileInputStream("src/main/resources/images/javaClient.png");
-//			javaClientImage = new Image(fis);
-//			fis.close();
-//			javaClientIV = new ImageView(javaClientImage);
-//			javaClientIV.setFitHeight(50);
-//			javaClientIV.setFitWidth(200);
-//			javaClientIV.setPreserveRatio(true);
-//
-//			fis = new FileInputStream("src/main/resources/images/dllClient.png");
-//			dllClientImage = new Image(fis);
-//			fis.close();
-//			dllClientIV = new ImageView(dllClientImage);
-//			dllClientIV.setFitHeight(50);
-//			dllClientIV.setFitWidth(200);
-//			dllClientIV.setPreserveRatio(true);
+			// fis = new FileInputStream("src/main/resources/images/javaClient.png");
+			// javaClientImage = new Image(fis);
+			// fis.close();
+			// javaClientIV = new ImageView(javaClientImage);
+			// javaClientIV.setFitHeight(50);
+			// javaClientIV.setFitWidth(200);
+			// javaClientIV.setPreserveRatio(true);
+			//
+			// fis = new FileInputStream("src/main/resources/images/dllClient.png");
+			// dllClientImage = new Image(fis);
+			// fis.close();
+			// dllClientIV = new ImageView(dllClientImage);
+			// dllClientIV.setFitHeight(50);
+			// dllClientIV.setFitWidth(200);
+			// dllClientIV.setPreserveRatio(true);
 		}
 		catch (IOException e)
 		{
@@ -446,28 +449,41 @@ public class RemoteUI extends Application
 			e.printStackTrace();
 		}
 
-		Label tomcatLB = new Label();
-		Label postgresLB = new Label();
-		Label springLB = new Label();
-		Label restapiLB = new Label();
-		Label javaLB = new Label();
-		Label javaClientLB = new Label();
-		Label dllClientLB = new Label();
+		Label tomcatLB = new Label("8.5.24");
+		tomcatLB.setPrefWidth(50);
+		tomcatLB.setAlignment(Pos.CENTER);
+		Label postgresLB = new Label("9.6.5");
+		postgresLB.setPrefWidth(50);
+		postgresLB.setAlignment(Pos.CENTER);
+		Label springLB = new Label("null");
+		springLB.setPrefWidth(50);
+		springLB.setAlignment(Pos.CENTER);
+		Label restapiLB = new Label("T5");
+		restapiLB.setPrefWidth(50);
+		restapiLB.setAlignment(Pos.CENTER);
+		Label javaLB = new Label("0.0.10");
+		javaLB.setPrefWidth(50);
+		javaLB.setAlignment(Pos.CENTER);
+		Label javaClientLB = new Label("checking");
+		javaClientLB.setPrefWidth(50);
+		javaClientLB.setAlignment(Pos.CENTER);
+		Label dllClientLB = new Label("checking");
+		dllClientLB.setPrefWidth(50);
+		dllClientLB.setAlignment(Pos.CENTER);
 
-		verList.getChildren().addAll(tomcatIV, tomcatLB, postgresIV, postgresLB, springIV, springLB, restapiIV,
+		verPane.getChildren().addAll(tomcatIV, tomcatLB, postgresIV, postgresLB, springIV, springLB, restapiIV,
 				restapiLB, javaIV, javaLB);
-		verPane.getChildren().add(verList);
-		AnchorPane.setTopAnchor(verList, 120.0);
-		AnchorPane.setLeftAnchor(verList, 400.0);
-
-		rPane.getChildren().add(verPane);
+		verPane.setTranslateX(505);
+		verPane.setTranslateY(15);
+		
+		tvPane.getChildren().add(verPane);
 	}
 
 	private void buildLeftPane()
 	{
 		bPane = new BorderPane();
 		bPane.setMinWidth(1225);
-		bPane.setMinHeight(637);
+		bPane.setMinHeight(645);
 		bPane.setPadding(new Insets(5, 10, 0, 10));
 
 		VBox leftPane = new VBox();
@@ -560,7 +576,7 @@ public class RemoteUI extends Application
 
 	private void buildTopPane()
 	{
-		// need delimiter line
+
 	}
 
 	private void buildCenterPane()

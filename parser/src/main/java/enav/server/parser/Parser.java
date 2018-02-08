@@ -1,6 +1,6 @@
 /**	
  * Created 01.25.2018.
- * Last Modified 01.25.2018.
+ * Last Modified 02.08.2018.
  * Class for describing parser has been built using POJO.
  * 
  * 
@@ -9,19 +9,33 @@
 package enav.server.parser;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.google.gson.Gson;
 
 public class Parser
 {
 	private BufferedOutputStream bos;
+	private BufferedReader bis;
 	private RandomAccessFile raf;
 	private DSPLog dspLog;
 	private String rawString;
 	private File log;
+	private File ver;
 	private final static int refresh = 500;
 
 	public Parser(BufferedOutputStream bos)
@@ -42,6 +56,8 @@ public class Parser
 			while (true)
 			{
 				Thread.sleep(refresh);
+
+				getVersion();
 
 				log = new File(System.getenv("CATALINA_HOME") + "/eNaviLogs/eNaviService.log");
 				raf = new RandomAccessFile(log, "r");
@@ -97,7 +113,7 @@ public class Parser
 
 		Gson gson = new Gson();
 		String parsedJson = gson.toJson(dspLog);
-//		System.out.println(parsedJson);
+		// System.out.println(parsedJson);
 		bos.write(parsedJson.getBytes());
 		bos.flush();
 	}
@@ -232,7 +248,7 @@ public class Parser
 			}
 		}
 		else
-		{	
+		{
 			dspLog.setErrName("No Error");
 			dspLog.setErrType("No Error");
 			dspLog.setErrTime("No Error");
@@ -243,10 +259,60 @@ public class Parser
 	{
 		// To Do
 	}
-	
+
 	private void sendLine() throws IOException
 	{
 		dspLog.setAllLog(rawString);
+	}
+
+	private void getVersion()
+	{
+		try
+		{
+			// tomcat version
+			dspLog.setTomcat(System.getenv("CATALINA_HOME").split("-")[2]);
+			dspLog.setJava(System.getenv("JAVA_HOME").split("jdk")[1]);
+
+			ver = new File(System.getenv("CATALINA_HOME")
+					+ "\\webapps\\rest-api\\META-INF\\maven\\com.hanwha.sample.spring.mybatis\\spring-sample-mybatis\\pom.xml");
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(ver);
+			doc.getDocumentElement().normalize();
+			NodeList nList = doc.getElementsByTagName("dependency");
+
+			for (int i = 0; i < nList.getLength(); ++i)
+			{
+				if (nList.item(i).getNodeType() == Node.ELEMENT_NODE)
+				{
+
+					Element element = (Element) (nList.item(i));
+					String app = element.getElementsByTagName("groupId").item(0).getTextContent();
+
+					// postgreSQL version
+					if (app.equals("org.postgresql"))
+						dspLog.setPostgres(element.getElementsByTagName("version").item(0).getTextContent());		
+				}
+			}
+
+			// spring boot version
+			dspLog.setSpring(((Element)(((Element) (doc.getElementsByTagName("parent").item(0))).getElementsByTagName("version")
+					.item(0))).getTextContent());
+			
+			// restapi version
+			dspLog.setRestapi(((Element)(((Element) (doc.getElementsByTagName("project").item(0))).getElementsByTagName("version")
+					.item(0))).getTextContent());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+//		System.out.println(dspLog.getTomcat());
+//		System.out.println(dspLog.getPostgres());
+//		System.out.println(dspLog.getSpring());
+//		System.out.println(dspLog.getRestapi());
+//		System.out.println(dspLog.getJava());
 	}
 
 }

@@ -1,6 +1,6 @@
 /**	
  * Created 01.30.2018.
- * Last Modified 01.30.2018.
+ * Last Modified 02.08.2018.
  * Main class for describing Log itself has been built using POJO.
  * 
  * 
@@ -22,6 +22,14 @@ public class DSPLog
 	private String errName="";
 	private String errTime="";
 	private String allLog="";
+	
+	private String tomcat="";
+	private String postgres="";
+	private String spring="";
+	private String restapi="";
+	private String java="";
+	private String javaClient="";
+	private String dllClient="";
 
 	public DSPLog()
 	{
@@ -29,6 +37,77 @@ public class DSPLog
 		
 		
 	}
+	
+	public String getTomcat()
+	{
+		return tomcat;
+	}
+
+	public void setTomcat(String tomcat)
+	{
+		this.tomcat = tomcat;
+	}
+
+	public String getPostgres()
+	{
+		return postgres;
+	}
+
+	public void setPostgres(String postgres)
+	{
+		this.postgres = postgres;
+	}
+
+	public String getSpring()
+	{
+		return spring;
+	}
+
+	public void setSpring(String spring)
+	{
+		this.spring = spring;
+	}
+
+	public String getRestapi()
+	{
+		return restapi;
+	}
+
+	public void setRestapi(String restapi)
+	{
+		this.restapi = restapi;
+	}
+
+	public String getJava()
+	{
+		return java;
+	}
+
+	public void setJava(String java)
+	{
+		this.java = java;
+	}
+
+	public String getJavaClient()
+	{
+		return javaClient;
+	}
+
+	public void setJavaClient(String javaClient)
+	{
+		this.javaClient = javaClient;
+	}
+
+	public String getDllClient()
+	{
+		return dllClient;
+	}
+
+	public void setDllClient(String dllClient)
+	{
+		this.dllClient = dllClient;
+	}
+
 	
 	public String getAllLog()
 	{

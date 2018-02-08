@@ -55,7 +55,7 @@ class ParseThread extends Thread
 		JsonParser parser = new JsonParser();
 		JsonObject jsonObject;
 
-		String[] result=new String[11];
+		String[] result=new String[16];
 		
 //		result[0] : String requestor;
 //		result[1] : String reqType;
@@ -69,6 +69,11 @@ class ParseThread extends Thread
 //		result[8] : String errName;
 //		result[9] : String errTime;
 //		result[10]: String allLog;
+//		result[11]: String tomcat;
+//		result[12]: String postgres;
+//		result[13]: String spring;
+//		result[14]: String restapi;
+//		result[15]: String java;
 		
 		while (true)
 		{
@@ -97,6 +102,11 @@ class ParseThread extends Thread
 				result[8] = jsonObject.get("errName").getAsString();
 				result[9] = jsonObject.get("errTime").getAsString();
 				result[10] = jsonObject.get("allLog").getAsString();
+				result[11] = jsonObject.get("tomcat").getAsString();
+				result[12] = jsonObject.get("postgres").getAsString();
+				result[13] = jsonObject.get("spring").getAsString();
+				result[14] = jsonObject.get("restapi").getAsString();
+				result[15] = jsonObject.get("java").getAsString();
 
 				rmt.setParsingResult(result);
 				

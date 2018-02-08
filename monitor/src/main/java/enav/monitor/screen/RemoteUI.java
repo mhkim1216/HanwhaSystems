@@ -1,6 +1,6 @@
 /**
  * Created 01.02.2018.
- * Last Modified 02.02.2018.
+ * Last Modified 02.08.2018.
  * Layout for overview screen has been built using JavaFX.
  * 
  * 
@@ -415,6 +415,7 @@ public class RemoteUI extends Application
 			restapiIV.setFitHeight(20);
 			restapiIV.setFitWidth(100);
 			restapiIV.setPreserveRatio(true);
+			restapiIV.setTranslateY(2);
 
 			fis = new FileInputStream("src/main/resources/images/java.png");
 			javaImage = new Image(fis);
@@ -423,7 +424,8 @@ public class RemoteUI extends Application
 			javaIV.setFitHeight(20);
 			javaIV.setFitWidth(200);
 			javaIV.setPreserveRatio(true);
-
+			javaIV.setTranslateY(1);
+			
 			// fis = new FileInputStream("src/main/resources/images/javaClient.png");
 			// javaClientImage = new Image(fis);
 			// fis.close();
@@ -452,24 +454,45 @@ public class RemoteUI extends Application
 		Label tomcatLB = new Label("8.5.24");
 		tomcatLB.setPrefWidth(50);
 		tomcatLB.setAlignment(Pos.CENTER);
+		tomcatLB.setTranslateY(2);
+		tomcatLB.setTextFill(Color.BURLYWOOD);
+		tomcatLB.setFont(Font.font(13));
 		Label postgresLB = new Label("9.6.5");
 		postgresLB.setPrefWidth(50);
 		postgresLB.setAlignment(Pos.CENTER);
+		postgresLB.setTranslateY(2);
+		postgresLB.setTextFill(Color.BURLYWOOD);
+		postgresLB.setFont(Font.font(13));
 		Label springLB = new Label("null");
 		springLB.setPrefWidth(50);
 		springLB.setAlignment(Pos.CENTER);
+		springLB.setTranslateY(2);
+		springLB.setTextFill(Color.BURLYWOOD);
+		springLB.setFont(Font.font(13));
 		Label restapiLB = new Label("T5");
 		restapiLB.setPrefWidth(50);
 		restapiLB.setAlignment(Pos.CENTER);
+		restapiLB.setTranslateY(2);
+		restapiLB.setTextFill(Color.BURLYWOOD);
+		restapiLB.setFont(Font.font(13));
 		Label javaLB = new Label("0.0.10");
 		javaLB.setPrefWidth(50);
 		javaLB.setAlignment(Pos.CENTER);
-		Label javaClientLB = new Label("checking");
-		javaClientLB.setPrefWidth(50);
-		javaClientLB.setAlignment(Pos.CENTER);
-		Label dllClientLB = new Label("checking");
-		dllClientLB.setPrefWidth(50);
-		dllClientLB.setAlignment(Pos.CENTER);
+		javaLB.setTranslateY(2);
+		javaLB.setTextFill(Color.BURLYWOOD);
+		javaLB.setFont(Font.font(13));
+//		Label javaClientLB = new Label("checking");
+//		javaClientLB.setPrefWidth(50);
+//		javaClientLB.setAlignment(Pos.CENTER);
+//		javaClientLB.setTranslateY(2);
+//		javaClientLB.setTextFill(Color.BURLYWOOD);
+//		javaClientLB.setFont(Font.font(13));
+//		Label dllClientLB = new Label("checking");
+//		dllClientLB.setPrefWidth(50);
+//		dllClientLB.setAlignment(Pos.CENTER);
+//		dllClientLB.setTranslateY(2);
+//		dllClientLB.setTextFill(Color.BURLYWOOD);
+//		dllClientLB.setFont(Font.font(13));
 
 		verPane.getChildren().addAll(tomcatIV, tomcatLB, postgresIV, postgresLB, springIV, springLB, restapiIV,
 				restapiLB, javaIV, javaLB);
@@ -1008,6 +1031,13 @@ public class RemoteUI extends Application
 		if (result[9].equals("No Error"))
 			errTimeText.setStyle("-fx-text-fill: #0e9b6c;");
 
+		System.out.println(result[11]);
+		System.out.println(result[12]);
+		System.out.println(result[13]);
+		System.out.println(result[14]);
+		System.out.println(result[15]);
+		
+		
 		// Display all logs line by line.
 		new Thread()
 		{

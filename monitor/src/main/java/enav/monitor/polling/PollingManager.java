@@ -40,18 +40,22 @@ public class PollingManager
 	public static PollingManager getInstance(RemoteUI rmt, History his, LogTrace log, ErrorTrace err)
 	{
 		if (manager == null)
-			return (new PollingManager(rmt, his, log, err));
+		{	
+			manager=new PollingManager(rmt, his, log, err);
+			return manager;
+		}
 		else
 			return manager;
+	}
+	
+	public static PollingManager getInstance()
+	{
+		return manager;
 	}
 
 	public void monitor(String ip, int port)
 	{
 
-		// what manager thread has to do
-		// set Client.name, Client.initTime, Client.lastTime...etc via setResults()
-
-		setResult();
 
 		ParseThread pThread=new ParseThread(ip, port, rmt, 1000);
 		pThread.start();
@@ -66,45 +70,36 @@ public class PollingManager
 				rmt.setConnected(pServerIP);
 		
 		// test codes. Requesting Row-Pane in History tab.
-		test("client1");
-		test("client1");
-		test("client2");
-		test("client3");
-		test("client4");
-		test("client4");
-		test("client4");
-		test("client1");
-		test("client1");
-		test("client5");
+
+		// empty
+		
+		
 	}
 
-	private void setResult()
-	{
-		Client.initCommon = "2018-01-24 10:23:53";
-		Client.lastCommon = "2018-01-24 11:09:27";
-	}
+
 
 	// if new session is created(manager thread is interrupted)
-	public void test(String name)
+	public void updateHistory(String name, String initSession, String lastSession)
 	{
-		his.addClient(getClient(name));
-	}
-
-	private Client getClient(String name)
-	{
+//		System.out.println(initSession);
+//		System.out.println(lastSession);
+		
+		Client client;
+		
 		// at least two times
 		if (clients.containsKey(name))
 		{
-			Client client = clients.get(name);
-			client.update(Client.lastCommon);
-			return client;
+			client = clients.get(name);
+			client.update(lastSession);
 		}
 
 		// at first time
 		else
 		{
-			clients.put(name, new Client(name, Client.initCommon, Client.lastCommon));
-			return clients.get(name);
+			client=new Client(name, initSession, lastSession);
+			clients.put(name, client);
 		}
+		
+		his.addClient(client);
 	}
 }

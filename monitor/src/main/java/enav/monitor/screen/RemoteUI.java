@@ -41,6 +41,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
@@ -102,6 +103,14 @@ public class RemoteUI extends Application
 	private double mouseY; // previous Y position
 	private Label serverInfo;
 	private Label opStatusLabel;
+
+	private Label tomcatLB;
+	private Label postgresLB;
+	private Label springLB;
+	private Label restapiLB;
+	private Label javaLB;
+	private Label javaClientLB;
+	private Label dllClientLB;
 
 	private TextField reqText;
 	private TextField reqTypeText;
@@ -192,8 +201,8 @@ public class RemoteUI extends Application
 
 	private void setTabPane()
 	{
-		tvPane=new StackPane();
-		
+		tvPane = new StackPane();
+
 		// create another tabs
 		hPane = getHistory();
 		logPane = getLogTrace();
@@ -357,7 +366,7 @@ public class RemoteUI extends Application
 		titleBar.getChildren().add(titleLabel);
 		titleBar.getChildren().add(imageView);
 		titleBar.getChildren().add(titleBarButtons);
-		
+
 		rPane.getChildren().addAll(titleBar, menuBar, tvPane);
 	}
 
@@ -425,7 +434,7 @@ public class RemoteUI extends Application
 			javaIV.setFitWidth(200);
 			javaIV.setPreserveRatio(true);
 			javaIV.setTranslateY(1);
-			
+
 			// fis = new FileInputStream("src/main/resources/images/javaClient.png");
 			// javaClientImage = new Image(fis);
 			// fis.close();
@@ -451,54 +460,55 @@ public class RemoteUI extends Application
 			e.printStackTrace();
 		}
 
-		Label tomcatLB = new Label("8.5.24");
+		tomcatLB = new Label();
 		tomcatLB.setPrefWidth(50);
-		tomcatLB.setAlignment(Pos.CENTER);
+//		tomcatLB.setAlignment(Pos.CENTER);
 		tomcatLB.setTranslateY(2);
 		tomcatLB.setTextFill(Color.BURLYWOOD);
 		tomcatLB.setFont(Font.font(13));
-		Label postgresLB = new Label("9.6.5");
+		postgresLB = new Label();
 		postgresLB.setPrefWidth(50);
-		postgresLB.setAlignment(Pos.CENTER);
+//		postgresLB.setAlignment(Pos.CENTER);
 		postgresLB.setTranslateY(2);
 		postgresLB.setTextFill(Color.BURLYWOOD);
 		postgresLB.setFont(Font.font(13));
-		Label springLB = new Label("null");
+		springLB = new Label();
 		springLB.setPrefWidth(50);
-		springLB.setAlignment(Pos.CENTER);
+//		springLB.setAlignment(Pos.CENTER);
 		springLB.setTranslateY(2);
 		springLB.setTextFill(Color.BURLYWOOD);
 		springLB.setFont(Font.font(13));
-		Label restapiLB = new Label("T5");
+		restapiLB = new Label();
 		restapiLB.setPrefWidth(50);
-		restapiLB.setAlignment(Pos.CENTER);
+//		restapiLB.setAlignment(Pos.CENTER);
 		restapiLB.setTranslateY(2);
 		restapiLB.setTextFill(Color.BURLYWOOD);
 		restapiLB.setFont(Font.font(13));
-		Label javaLB = new Label("0.0.10");
+		javaLB = new Label();
 		javaLB.setPrefWidth(50);
-		javaLB.setAlignment(Pos.CENTER);
+//		javaLB.setAlignment(Pos.CENTER);
 		javaLB.setTranslateY(2);
 		javaLB.setTextFill(Color.BURLYWOOD);
 		javaLB.setFont(Font.font(13));
-//		Label javaClientLB = new Label("checking");
-//		javaClientLB.setPrefWidth(50);
-//		javaClientLB.setAlignment(Pos.CENTER);
-//		javaClientLB.setTranslateY(2);
-//		javaClientLB.setTextFill(Color.BURLYWOOD);
-//		javaClientLB.setFont(Font.font(13));
-//		Label dllClientLB = new Label("checking");
-//		dllClientLB.setPrefWidth(50);
-//		dllClientLB.setAlignment(Pos.CENTER);
-//		dllClientLB.setTranslateY(2);
-//		dllClientLB.setTextFill(Color.BURLYWOOD);
-//		dllClientLB.setFont(Font.font(13));
+		// javaClientLB = new Label("checking");
+		// javaClientLB.setPrefWidth(50);
+		// javaClientLB.setAlignment(Pos.CENTER);
+		// javaClientLB.setTranslateY(2);
+		// javaClientLB.setTextFill(Color.BURLYWOOD);
+		// javaClientLB.setFont(Font.font(13));
+		// dllClientLB = new Label("checking");
+		// dllClientLB.setPrefWidth(50);
+		// dllClientLB.setAlignment(Pos.CENTER);
+		// dllClientLB.setTranslateY(2);
+		// dllClientLB.setTextFill(Color.BURLYWOOD);
+		// dllClientLB.setFont(Font.font(13));
 
 		verPane.getChildren().addAll(tomcatIV, tomcatLB, postgresIV, postgresLB, springIV, springLB, restapiIV,
 				restapiLB, javaIV, javaLB);
 		verPane.setTranslateX(505);
-		verPane.setTranslateY(15);
-		
+		verPane.setTranslateY(-323);
+		verPane.setMaxHeight(50);
+
 		tvPane.getChildren().add(verPane);
 	}
 
@@ -692,7 +702,7 @@ public class RemoteUI extends Application
 		SVModuleText = new TextField();
 		SVModuleText.getStylesheets().add("/css/TextField.css");
 		SVModuleText.setPrefColumnCount(18);
-		SVModuleText.setEditable(false);
+//		SVModuleText.setEditable(false);
 		SVModuleText.setAlignment(Pos.CENTER);
 		paramText = new TextField();
 		paramText.getStylesheets().add("/css/TextField.css");
@@ -755,6 +765,7 @@ public class RemoteUI extends Application
 		allLog.getStylesheets().add("/css/TextArea.css");
 		allLog.setPrefRowCount(10);
 		allLog.setWrapText(true);
+		allLog.toFront();
 
 		Label statusTitle = new Label("[Server Status]");
 		statusTitle.setTextFill(Color.BURLYWOOD);
@@ -1000,8 +1011,10 @@ public class RemoteUI extends Application
 		reqTypeText.setText(result[1]);
 
 		SVModuleText.setText(result[2]);
-		if (result[2].length() < 21)
-			paramText.setAlignment(Pos.CENTER);
+		if (result[2].length() < 23)
+			SVModuleText.setAlignment(Pos.CENTER);
+		else
+			SVModuleText.setAlignment(Pos.CENTER_LEFT);
 
 		paramText.setText(result[3]);
 
@@ -1015,29 +1028,68 @@ public class RemoteUI extends Application
 		sIdText.setText(result[4]);
 		if (result[4].equals("null") || result[4].equals("Unknown ID"))
 			sIdText.setAlignment(Pos.CENTER);
+		else
+			sIdText.setAlignment(Pos.CENTER_LEFT);
 
 		sTimeText.setText(result[5]);
 		reqQueryText.setText(result[6]);
 
 		errTypeText.setText(result[7]);
 		if (result[7].equals("No Error"))
+		{
 			errTypeText.setStyle("-fx-text-fill: #0e9b6c;");
+			errTypeText.setAlignment(Pos.CENTER);
+		}
+		if (result[7].length() > 15)
+			errTypeText.setAlignment(Pos.CENTER_LEFT);
 
 		errNameText.setText(result[8]);
 		if (result[8].equals("No Error"))
+		{
 			errNameText.setStyle("-fx-text-fill: #0e9b6c;");
+			errNameText.setAlignment(Pos.CENTER);
+		}
+		if (result[8].length() > 15)
+			errNameText.setAlignment(Pos.CENTER_LEFT);
 
 		errTimeText.setText(result[9]);
 		if (result[9].equals("No Error"))
+		{
 			errTimeText.setStyle("-fx-text-fill: #0e9b6c;");
+			errTimeText.setAlignment(Pos.CENTER);
+		}
+		if (result[9].length() > 15)
+			errTimeText.setAlignment(Pos.CENTER_LEFT);
 
-		System.out.println(result[11]);
-		System.out.println(result[12]);
-		System.out.println(result[13]);
-		System.out.println(result[14]);
-		System.out.println(result[15]);
-		
-		
+		Platform.runLater(new Runnable() {
+
+			public void run()
+			{
+				Tooltip tip1=new Tooltip(result[11]);
+				Tooltip tip2=new Tooltip(result[12]);
+				Tooltip tip3=new Tooltip(result[13]);
+				Tooltip tip4=new Tooltip(result[14]);
+				Tooltip tip5=new Tooltip(result[15]);
+//				Tooltip tip6=new Tooltip(result[16]);
+//				Tooltip tip7=new Tooltip(result[17]);
+				
+				tomcatLB.setText(result[11]);
+				tomcatLB.setTooltip(tip1);
+				postgresLB.setText(result[12]);
+				postgresLB.setTooltip(tip2);
+				springLB.setText(result[13]);
+				springLB.setTooltip(tip3);
+				restapiLB.setText(result[14]);
+				restapiLB.setTooltip(tip4);
+				javaLB.setText(result[15]);
+				javaLB.setTooltip(tip5);
+//				javaClientLB.setText(result[16]);
+//				javaClientLB.setTooltip(tip6);
+//				dllClientLB.setText(result[17]);
+//				dllClientLB.setTooltip(tip7);
+			}
+		});
+
 		// Display all logs line by line.
 		new Thread()
 		{
@@ -1056,7 +1108,6 @@ public class RemoteUI extends Application
 						{
 							allLog.setText(sb.append(str[i]).append("\r\n\r\n").toString());
 						};
-
 					});
 					try
 					{

@@ -17,30 +17,27 @@ public class Client
 {
 	private boolean isRunning;
 	private String name;
-	private String initTime;
-	private String lastTime;
+	private String initSession;
+	private String lastSession;
 	private String usingTime;
 	private int usingCount;
 	private static List<Trace> sqlList;
-
-	public static String initCommon;
-	public static String lastCommon;
 
 	public Client()
 	{
 		// nothing to do
 	}
 
-	public Client(String name, String initTime, String lastTime)
+	public Client(String name, String initSession, String lastSession)
 	{
 		this.isRunning = true;
 
 		if (this.name == null)
 			this.name = name;
-		if (this.initTime == null)
-			this.initTime = initTime;
-		if (this.lastTime == null)
-			this.lastTime = lastTime;
+		if (this.initSession == null)
+			this.initSession = initSession;
+		if (this.lastSession == null)
+			this.lastSession = lastSession;
 
 		this.usingTime = getUsingTime();
 
@@ -51,29 +48,29 @@ public class Client
 
 	}
 
-	public String getInitTime()
+	public String getInitSession()
 	{
-		return initTime;
+		return initSession;
 	}
 
-	public void setInitTime(String initTime)
+	public void setInitSession(String initSession)
 	{
-		this.initTime = initTime;
+		this.initSession = initSession;
 	}
 
-	public String getLastTime()
+	public String getLastSession()
 	{
-		return lastTime;
+		return lastSession;
 	}
 
-	public void setLastTime(String lastTime)
+	public void setLastSession(String lastSession)
 	{
-		this.lastTime = lastTime;
+		this.lastSession = lastSession;
 	}
 
 	public String getUsingTime()
 	{
-		usingTime = calculateUsingTime(initTime, lastTime);
+		usingTime = calculateUsingTime(initSession, lastSession);
 		return usingTime;
 	}
 
@@ -112,10 +109,10 @@ public class Client
 		this.isRunning = isRunning;
 	}
 
-	public void update(String lastTime)
+	public void update(String lastSession)
 	{
-		this.lastTime = lastTime;
-		this.usingTime = calculateUsingTime(initTime, lastTime);
+		this.lastSession = lastSession;
+		this.usingTime = calculateUsingTime(initSession, lastSession);
 		// ++(this.usingCount);
 	}
 
@@ -160,10 +157,10 @@ public class Client
 	}
 	
 
-	public void addTrace(int num, String initTime, String query, boolean result)
+	public void addTrace(int num, String initSession, String query, boolean result)
 	{
 
-		sqlList.add(new Trace(num, initTime, query, result));
+		sqlList.add(new Trace(num, initSession, query, result));
 	}
 
 }

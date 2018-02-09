@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import enav.monitor.polling.Client;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -31,6 +32,7 @@ public class History
 
 	private final static int columnWidth = 180;
 	private static boolean isFirst = true;
+	private HBox aClient;
 	Map<String, HBox> clientList;
 
 	public History()
@@ -103,7 +105,7 @@ public class History
 	{
 		if (!clientList.containsKey(client.getName()))
 		{
-			HBox aClient = new HBox(10);
+			aClient = new HBox(10);
 
 			Circle circle = new Circle();
 			circle.setRadius(10);
@@ -125,13 +127,13 @@ public class History
 			TextField field1 = new TextField();
 			field1.setPrefWidth(columnWidth);
 			field1.getStylesheets().add("/css/TextField.css");
-			field1.setText(client.getInitTime());
+			field1.setText(client.getInitSession());
 			field1.setAlignment(Pos.CENTER);
 			field1.setFont(Font.font(14));
 			TextField field2 = new TextField();
 			field2.setPrefWidth(columnWidth);
 			field2.getStylesheets().add("/css/TextField.css");
-			field2.setText(client.getLastTime());
+			field2.setText(client.getLastSession());
 			field2.setAlignment(Pos.CENTER);
 			field2.setFont(Font.font(14));
 			TextField field3 = new TextField();
@@ -151,13 +153,18 @@ public class History
 
 			aClient.getChildren().addAll(circle, clientLabel, field1, field2, field3, field4, traceBtn);
 			clientList.put(client.getName(), aClient);
-			rPane.getChildren().add(aClient);
+			Platform.runLater(new Runnable() {
+
+				public void run()
+				{
+					rPane.getChildren().add(aClient);
+				}});
 		}
 		else
 		{
 			HBox aClient=clientList.get(client.getName());
-			((TextField)aClient.getChildren().get(2)).setText(client.getInitTime());
-			((TextField)aClient.getChildren().get(3)).setText(client.getLastTime());
+			((TextField)aClient.getChildren().get(2)).setText(client.getInitSession());
+			((TextField)aClient.getChildren().get(3)).setText(client.getLastSession());
 			((TextField)aClient.getChildren().get(4)).setText(client.getUsingTime());
 			((TextField)aClient.getChildren().get(5)).setText(String.valueOf(client.getUsingCount()));
 		}

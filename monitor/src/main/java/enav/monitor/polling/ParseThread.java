@@ -8,12 +8,15 @@ import java.net.UnknownHostException;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.stream.MalformedJsonException;
 
 import enav.monitor.screen.RemoteUI;
 
 class ParseThread extends Thread
 {
 	private RemoteUI rmt;
+	private PollingManager manager;
 	private DualSocket parseSocket;
 	private BufferedInputStream bis;
 	private BufferedOutputStream bos;
@@ -25,7 +28,8 @@ class ParseThread extends Thread
 		super("parse_monitor");
 		this.rmt = rmt;
 		this.refresh = refresh;
-
+		this.manager=PollingManager.getInstance();
+		
 		try
 		{
 			parseSocket = new DualSocket(ip, port, DualSocket.PARSE);
@@ -55,7 +59,7 @@ class ParseThread extends Thread
 		JsonParser parser = new JsonParser();
 		JsonObject jsonObject;
 
-		String[] result=new String[16];
+		String[] result=new String[20];
 		
 //		result[0] : String requestor;
 //		result[1] : String reqType;
@@ -74,6 +78,10 @@ class ParseThread extends Thread
 //		result[13]: String spring;
 //		result[14]: String restapi;
 //		result[15]: String java;
+//		result[16]: String javaClient;
+//		result[17]: String dllClient;
+//		result[18]: String firstSession;
+//		result[19]: String lastSession;
 		
 		while (true)
 		{
@@ -107,13 +115,36 @@ class ParseThread extends Thread
 				result[13] = jsonObject.get("spring").getAsString();
 				result[14] = jsonObject.get("restapi").getAsString();
 				result[15] = jsonObject.get("java").getAsString();
-
+//				result[16] = jsonObject.get("javaClient").getAsString();
+//				result[17] = jsonObject.get("dllClient").getAsString();
+				result[18] = jsonObject.get("firstSession").getAsString();
+				result[19] = jsonObject.get("lastSession").getAsString();
+				
+				
 				rmt.setParsingResult(result);
+				
+				manager.updateHistory(result[0], result[18], result[19]);
 				
 				Thread.sleep(1500);	// time to change status from run to idle
 				rmt.setOpStatus("IDLE");
 
 				jsonString = new byte[32768];
+			}
+			catch(MalformedJsonException e)
+			{
+				e.printStackTrace();
+				jsonString = new byte[32768];
+				continue;
+			}
+			catch(InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+			catch(JsonSyntaxException e)
+			{
+				e.printStackTrace();
+				jsonString = new byte[32768];
+				continue;
 			}
 			catch (IOException e)
 			{
@@ -121,10 +152,7 @@ class ParseThread extends Thread
 				e.printStackTrace();
 				break;
 			}
-			catch(InterruptedException e)
-			{
-				e.printStackTrace();
-			}
+			
 		}
 
 	}

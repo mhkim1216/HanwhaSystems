@@ -30,6 +30,9 @@ public class DSPLog
 	private String java="";
 	private String javaClient="";
 	private String dllClient="";
+	
+	private String firstSession="";
+	private String lastSession="";
 
 	public DSPLog()
 	{
@@ -218,6 +221,28 @@ public class DSPLog
 	{
 		this.errTime = errTime;
 	}
+
+	public String getFirstSession()
+	{
+		return firstSession;
+	}
+
+	public void setFirstSession(String firstSession)
+	{
+		this.firstSession = firstSession;
+	}
+
+	public String getLastSession()
+	{
+		return lastSession;
+	}
+
+	public void setLastSession(String lastSession)
+	{
+		this.lastSession = lastSession;
+	}
+	
+	
 	
 	
 	

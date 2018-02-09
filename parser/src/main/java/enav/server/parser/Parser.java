@@ -11,15 +11,12 @@ package enav.server.parser;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -101,6 +98,8 @@ public class Parser
 	private void parse() throws IOException
 	{
 		sendLine();
+		parseInit();
+		parseLast();
 		parseRequestor();
 		parseRequestType();
 		parseService();
@@ -285,7 +284,6 @@ public class Parser
 			{
 				if (nList.item(i).getNodeType() == Node.ELEMENT_NODE)
 				{
-
 					Element element = (Element) (nList.item(i));
 					String app = element.getElementsByTagName("groupId").item(0).getTextContent();
 
@@ -313,6 +311,18 @@ public class Parser
 //		System.out.println(dspLog.getSpring());
 //		System.out.println(dspLog.getRestapi());
 //		System.out.println(dspLog.getJava());
+	}
+	
+	private void parseInit()
+	{
+		dspLog.setFirstSession(rawString.substring(0, rawString.indexOf(",")));
+		System.out.println("init session : "+dspLog.getFirstSession());
+	}
+	
+	private void parseLast()
+	{
+		dspLog.setLastSession(rawString.substring(rawString.lastIndexOf(",")-19 , rawString.lastIndexOf(",")));	
+		System.out.println("last session : "+dspLog.getLastSession());
 	}
 
 }

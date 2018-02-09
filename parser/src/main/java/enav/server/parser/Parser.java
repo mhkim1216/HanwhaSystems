@@ -71,6 +71,8 @@ public class Parser
 				rawString = new String(rawBytes).trim();
 
 				parse();
+
+				rawBytes = new byte[20000];
 			}
 
 		}
@@ -289,40 +291,40 @@ public class Parser
 
 					// postgreSQL version
 					if (app.equals("org.postgresql"))
-						dspLog.setPostgres(element.getElementsByTagName("version").item(0).getTextContent());		
+						dspLog.setPostgres(element.getElementsByTagName("version").item(0).getTextContent());
 				}
 			}
 
 			// spring boot version
-			dspLog.setSpring(((Element)(((Element) (doc.getElementsByTagName("parent").item(0))).getElementsByTagName("version")
-					.item(0))).getTextContent());
-			
+			dspLog.setSpring(((Element) (((Element) (doc.getElementsByTagName("parent").item(0)))
+					.getElementsByTagName("version").item(0))).getTextContent());
+
 			// restapi version
-			dspLog.setRestapi(((Element)(((Element) (doc.getElementsByTagName("project").item(0))).getElementsByTagName("version")
-					.item(0))).getTextContent());
+			dspLog.setRestapi(((Element) (((Element) (doc.getElementsByTagName("project").item(0)))
+					.getElementsByTagName("version").item(0))).getTextContent());
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-		
-//		System.out.println(dspLog.getTomcat());
-//		System.out.println(dspLog.getPostgres());
-//		System.out.println(dspLog.getSpring());
-//		System.out.println(dspLog.getRestapi());
-//		System.out.println(dspLog.getJava());
+
+		// System.out.println(dspLog.getTomcat());
+		// System.out.println(dspLog.getPostgres());
+		// System.out.println(dspLog.getSpring());
+		// System.out.println(dspLog.getRestapi());
+		// System.out.println(dspLog.getJava());
 	}
-	
+
 	private void parseInit()
 	{
 		dspLog.setFirstSession(rawString.substring(0, rawString.indexOf(",")));
-		System.out.println("init session : "+dspLog.getFirstSession());
+//		System.out.println("init session : " + dspLog.getFirstSession());
 	}
-	
+
 	private void parseLast()
 	{
-		dspLog.setLastSession(rawString.substring(rawString.lastIndexOf(",")-19 , rawString.lastIndexOf(",")));	
-		System.out.println("last session : "+dspLog.getLastSession());
+		dspLog.setLastSession(rawString.substring(rawString.lastIndexOf(",") - 19, rawString.lastIndexOf(",")));
+//		System.out.println("last session : " + dspLog.getLastSession());
 	}
 
 }

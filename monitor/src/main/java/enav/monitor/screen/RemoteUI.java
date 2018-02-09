@@ -1098,7 +1098,7 @@ public class RemoteUI extends Application
 
 			@Override
 			public void run()
-			{
+			{System.out.println(result[10]);
 
 				for (i = 0; i < str.length; ++i)
 				{

@@ -1,6 +1,6 @@
 /**
  * Created 01.23.2018.
- * Last Modified 01.23.2018.
+ * Last Modified 02.10.2018.
  * Layout for history screen has been built using JavaFX.
  * 
  * 
@@ -72,29 +72,40 @@ public class History
 	private HBox getTitleRow()
 	{
 		HBox titleRow = new HBox(10);
+		titleRow.setPadding(new Insets(20, 0, 0, 0));
 
-		Label column1 = new Label();
-		column1.setMinWidth(195);
+		Label column1 = new Label("Client");
+		column1.setFont(Font.font(16));
+		column1.setTextFill(Color.WHITE);
+		column1.setPrefWidth(columnWidth);
+		column1.setAlignment(Pos.CENTER);
 		Label column2 = new Label("First Session");
 		column2.setFont(Font.font(16));
 		column2.setTextFill(Color.WHITE);
-		column2.setMinWidth(columnWidth);
+		column2.setPrefWidth(columnWidth*0.69);
+		column2.setAlignment(Pos.CENTER);
 		Label column3 = new Label("Last Session");
 		column3.setFont(Font.font(16));
 		column3.setTextFill(Color.WHITE);
-		column3.setMinWidth(columnWidth);
-		Label column4 = new Label("Usage Time");
+		column3.setPrefWidth(columnWidth*1.29);
+		column3.setAlignment(Pos.CENTER);
+		Label column4 = new Label("Period");
 		column4.setFont(Font.font(16));
 		column4.setTextFill(Color.WHITE);
-		column4.setMinWidth(columnWidth);
-		Label column5 = new Label("Usage Count");
+		column4.setPrefWidth(columnWidth * 0.37);
+		column4.setAlignment(Pos.CENTER);
+		column4.setTranslateX(-20);
+		Label column5 = new Label("Count");
 		column5.setFont(Font.font(16));
 		column5.setTextFill(Color.WHITE);
-		column5.setMinWidth(columnWidth);
-		Label column6 = new Label();
+		column5.setPrefWidth(columnWidth * 0.43);
+		column5.setAlignment(Pos.CENTER);
+		Label column6 = new Label("Query");
 		column6.setFont(Font.font(16));
 		column6.setTextFill(Color.WHITE);
-		column6.setMinWidth(columnWidth);
+		column6.setPrefWidth(columnWidth*1.75);
+		column6.setAlignment(Pos.CENTER);
+
 		titleRow.getChildren().addAll(column1, column2, column3, column4, column5, column6);
 
 		return titleRow;
@@ -109,7 +120,8 @@ public class History
 
 			Circle circle = new Circle();
 			circle.setRadius(10);
-			circle.setTranslateY(5);;
+			circle.setTranslateY(5);
+			;
 			InnerShadow innerShadow = new InnerShadow(13, Color.BLACK);
 			circle.setEffect(innerShadow);
 
@@ -137,36 +149,49 @@ public class History
 			field2.setAlignment(Pos.CENTER);
 			field2.setFont(Font.font(14));
 			TextField field3 = new TextField();
-			field3.setPrefWidth(columnWidth);
+			field3.setPrefWidth(columnWidth * 0.50);
 			field3.getStylesheets().add("/css/TextField.css");
 			field3.setText(client.getUsingTime());
 			field3.setAlignment(Pos.CENTER);
 			field3.setFont(Font.font(14));
 			TextField field4 = new TextField();
-			field4.setPrefWidth(columnWidth);
+			field4.setPrefWidth(columnWidth * 0.50);
 			field4.getStylesheets().add("/css/TextField.css");
 			field4.setText(String.valueOf(client.getUsingCount()));
 			field4.setAlignment(Pos.CENTER);
 			field4.setFont(Font.font(14));
+			TextField field5 = new TextField();
+			field5.setPrefWidth(columnWidth*1.75);
+			field5.getStylesheets().add("/css/TextField.css");
+			field5.setText(String.valueOf(client.getQuery()));
+			if(field5.getText().contains("No SQL"))
+				field5.setAlignment(Pos.CENTER);
+			else
+				field5.setAlignment(Pos.CENTER_LEFT);
+			field5.setFont(Font.font(14));
+
 			Button traceBtn = new Button("TRACE ALL");
 			traceBtn.getStylesheets().add("/css/Button.css");
 
-			aClient.getChildren().addAll(circle, clientLabel, field1, field2, field3, field4, traceBtn);
+			aClient.getChildren().addAll(circle, clientLabel, field1, field2, field3, field4, field5, traceBtn);
 			clientList.put(client.getName(), aClient);
-			Platform.runLater(new Runnable() {
+			Platform.runLater(new Runnable()
+			{
 
 				public void run()
 				{
 					rPane.getChildren().add(aClient);
-				}});
+				}
+			});
 		}
 		else
 		{
-			HBox aClient=clientList.get(client.getName());
-			((TextField)aClient.getChildren().get(2)).setText(client.getInitSession());
-			((TextField)aClient.getChildren().get(3)).setText(client.getLastSession());
-			((TextField)aClient.getChildren().get(4)).setText(client.getUsingTime());
-			((TextField)aClient.getChildren().get(5)).setText(String.valueOf(client.getUsingCount()));
+			HBox aClient = clientList.get(client.getName());
+			((TextField) aClient.getChildren().get(2)).setText(client.getInitSession());
+			((TextField) aClient.getChildren().get(3)).setText(client.getLastSession());
+			((TextField) aClient.getChildren().get(4)).setText(client.getUsingTime());
+			((TextField) aClient.getChildren().get(5)).setText(String.valueOf(client.getUsingCount()));
+			((TextField) aClient.getChildren().get(6)).setText(client.getQuery());
 		}
 
 	}

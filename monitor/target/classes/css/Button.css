@@ -11,7 +11,7 @@
     -fx-font-family: "Arial";
     -fx-text-fill: linear-gradient(burlywood, #d0d0d0);
     -fx-font-size: 12px;
-    -fx-padding: 5 20 6 20;
+    -fx-padding: 5 16 6 16;
 }
 
 .button:pressed {

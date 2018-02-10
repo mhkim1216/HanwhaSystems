@@ -55,8 +55,6 @@ public class PollingManager
 
 	public void monitor(String ip, int port)
 	{
-
-
 		ParseThread pThread=new ParseThread(ip, port, rmt, 1000);
 		pThread.start();
 		ResourceThread rThread=new ResourceThread(ip, port, rmt, 1000);
@@ -79,7 +77,7 @@ public class PollingManager
 
 
 	// if new session is created(manager thread is interrupted)
-	public void updateHistory(String name, String initSession, String lastSession)
+	public void updateHistory(String name, String initSession, String lastSession, String query)
 	{
 //		System.out.println(initSession);
 //		System.out.println(lastSession);
@@ -90,13 +88,13 @@ public class PollingManager
 		if (clients.containsKey(name))
 		{
 			client = clients.get(name);
-			client.update(lastSession);
+			client.update(lastSession, query);
 		}
 
 		// at first time
 		else
 		{
-			client=new Client(name, initSession, lastSession);
+			client=new Client(name, initSession, lastSession, query);
 			clients.put(name, client);
 		}
 		

@@ -123,7 +123,7 @@ class ParseThread extends Thread
 				
 				rmt.setParsingResult(result);
 				
-				manager.updateHistory(result[0], result[18], result[19]);
+				manager.updateHistory(result[0], result[18], result[19], result[6]);
 				
 				Thread.sleep(1500);	// time to change status from run to idle
 				rmt.setOpStatus("IDLE");

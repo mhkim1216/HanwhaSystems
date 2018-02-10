@@ -21,6 +21,7 @@ public class Client
 	private String lastSession;
 	private String usingTime;
 	private int usingCount;
+	private String query;
 	private static List<Trace> sqlList;
 
 	public Client()
@@ -28,7 +29,7 @@ public class Client
 		// nothing to do
 	}
 
-	public Client(String name, String initSession, String lastSession)
+	public Client(String name, String initSession, String lastSession, String query)
 	{
 		this.isRunning = true;
 
@@ -40,6 +41,7 @@ public class Client
 			this.lastSession = lastSession;
 
 		this.usingTime = getUsingTime();
+		this.query=query;
 
 		if (sqlList == null)
 			sqlList = new ArrayList<Trace>();
@@ -98,6 +100,31 @@ public class Client
 	{
 		this.name = name;
 	}
+	
+	public String getQuery()
+	{
+		return query;
+	}
+
+	public void setQuery(String query)
+	{
+		this.query = query;
+	}
+
+	public static List<Trace> getSqlList()
+	{
+		return sqlList;
+	}
+
+	public static void setSqlList(List<Trace> sqlList)
+	{
+		Client.sqlList = sqlList;
+	}
+
+	public void setUsingCount(int usingCount)
+	{
+		this.usingCount = usingCount;
+	}
 
 	public boolean isRunning()
 	{
@@ -109,9 +136,10 @@ public class Client
 		this.isRunning = isRunning;
 	}
 
-	public void update(String lastSession)
+	public void update(String lastSession, String query)
 	{
 		this.lastSession = lastSession;
+		this.query=query;
 		this.usingTime = calculateUsingTime(initSession, lastSession);
 		// ++(this.usingCount);
 	}

@@ -77,7 +77,7 @@ public class PollingManager
 
 
 	// if new session is created(manager thread is interrupted)
-	public void updateHistory(String name, String initSession, String lastSession, String query)
+	public void updateHistory(String name, String firstSession, String lastSession, String query)
 	{
 //		System.out.println(initSession);
 //		System.out.println(lastSession);
@@ -94,9 +94,12 @@ public class PollingManager
 		// at first time
 		else
 		{
-			client=new Client(name, initSession, lastSession, query);
+			client=new Client(name, firstSession, lastSession, query);
 			clients.put(name, client);
 		}
+		
+		// add or update each client's all logs(=trace).
+		client.addTrace(firstSession, lastSession, query);
 		
 		his.addClient(client);
 	}

@@ -733,7 +733,7 @@ public class RemoteUI extends Application
 		Label[] ok = new Label[7];
 		for (int i = 0; i < 7; ++i)
 		{
-			ok[i] = new Label("PASSED");
+			ok[i] = new Label("VALID");
 			ok[i].setTranslateX(20);
 			ok[i].getStylesheets().add("/css/checkLabelBorder.css");
 		}
@@ -927,7 +927,7 @@ public class RemoteUI extends Application
 	private Pane getLogTrace()
 	{
 		logTrace = new LogTrace();
-		return new FlowPane();
+		return logTrace.buildTablePane();
 
 	}
 

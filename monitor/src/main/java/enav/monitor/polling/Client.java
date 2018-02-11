@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import enav.monitor.screen.Trace;
+
 public class Client
 {
 	private boolean isRunning;
@@ -22,7 +24,7 @@ public class Client
 	private String usingTime;
 	private int usingCount;
 	private String query;
-	private static List<Trace> sqlList;
+	private List<Trace> sqlList;
 
 	public Client()
 	{
@@ -43,8 +45,7 @@ public class Client
 		this.usingTime = getUsingTime();
 		this.query=query;
 
-		if (sqlList == null)
-			sqlList = new ArrayList<Trace>();
+		this.sqlList = new ArrayList<Trace>();
 
 		// add each client's trace
 
@@ -111,14 +112,14 @@ public class Client
 		this.query = query;
 	}
 
-	public static List<Trace> getSqlList()
+	public List<Trace> getSqlList()
 	{
 		return sqlList;
 	}
 
-	public static void setSqlList(List<Trace> sqlList)
+	public void setSqlList(List<Trace> sqlList)
 	{
-		Client.sqlList = sqlList;
+		this.sqlList = sqlList;
 	}
 
 	public void setUsingCount(int usingCount)
@@ -141,7 +142,6 @@ public class Client
 		this.lastSession = lastSession;
 		this.query=query;
 		this.usingTime = calculateUsingTime(initSession, lastSession);
-		// ++(this.usingCount);
 	}
 
 	private String calculateUsingTime(String init, String last)
@@ -185,10 +185,10 @@ public class Client
 	}
 	
 
-	public void addTrace(int num, String initSession, String query, boolean result)
+	public void addTrace(String firstSession, String lastSession, String query)
 	{
 
-		sqlList.add(new Trace(num, initSession, query, result));
+		sqlList.add(new Trace(firstSession, lastSession, query));
 	}
 
 }

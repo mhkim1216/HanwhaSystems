@@ -12,7 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import enav.monitor.polling.Client;
+import enav.monitor.polling.PollingManager;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -34,11 +37,12 @@ public class History
 	private static boolean isFirst = true;
 	private HBox aClient;
 	Map<String, HBox> clientList;
+	private LogTrace logTrace;
 
-	public History()
+	public History(LogTrace logTrace)
 	{
 		clientList = new HashMap<String, HBox>();
-
+		this.logTrace = logTrace;
 	}
 
 	// only can be invoked in PollingManager
@@ -82,12 +86,12 @@ public class History
 		Label column2 = new Label("First Session");
 		column2.setFont(Font.font(16));
 		column2.setTextFill(Color.WHITE);
-		column2.setPrefWidth(columnWidth*0.69);
+		column2.setPrefWidth(columnWidth * 0.69);
 		column2.setAlignment(Pos.CENTER);
 		Label column3 = new Label("Last Session");
 		column3.setFont(Font.font(16));
 		column3.setTextFill(Color.WHITE);
-		column3.setPrefWidth(columnWidth*1.29);
+		column3.setPrefWidth(columnWidth * 1.29);
 		column3.setAlignment(Pos.CENTER);
 		Label column4 = new Label("Period");
 		column4.setFont(Font.font(16));
@@ -103,7 +107,7 @@ public class History
 		Label column6 = new Label("Query");
 		column6.setFont(Font.font(16));
 		column6.setTextFill(Color.WHITE);
-		column6.setPrefWidth(columnWidth*1.75);
+		column6.setPrefWidth(columnWidth * 1.75);
 		column6.setAlignment(Pos.CENTER);
 
 		titleRow.getChildren().addAll(column1, column2, column3, column4, column5, column6);
@@ -112,7 +116,7 @@ public class History
 	}
 
 	// only can be invoked in privately
-	private void addRowPane(Client client)
+	private void addRowPane(final Client client)
 	{
 		if (!clientList.containsKey(client.getName()))
 		{
@@ -161,10 +165,10 @@ public class History
 			field4.setAlignment(Pos.CENTER);
 			field4.setFont(Font.font(14));
 			TextField field5 = new TextField();
-			field5.setPrefWidth(columnWidth*1.75);
+			field5.setPrefWidth(columnWidth * 1.75);
 			field5.getStylesheets().add("/css/TextField.css");
 			field5.setText(String.valueOf(client.getQuery()));
-			if(field5.getText().contains("No SQL"))
+			if (field5.getText().contains("No SQL"))
 				field5.setAlignment(Pos.CENTER);
 			else
 				field5.setAlignment(Pos.CENTER_LEFT);
@@ -172,6 +176,14 @@ public class History
 
 			Button traceBtn = new Button("TRACE ALL");
 			traceBtn.getStylesheets().add("/css/Button.css");
+			traceBtn.setOnAction(new EventHandler<ActionEvent>()
+			{
+				public void handle(ActionEvent event)
+				{
+					logTrace.updateTable(
+							PollingManager.getInstance().getClientList().get(client.getName()).getSqlList());
+				}
+			});
 
 			aClient.getChildren().addAll(circle, clientLabel, field1, field2, field3, field4, field5, traceBtn);
 			clientList.put(client.getName(), aClient);

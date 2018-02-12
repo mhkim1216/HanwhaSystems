@@ -158,9 +158,7 @@ class ParseThread extends Thread
 				e.printStackTrace();
 				break;
 			}
-			
 		}
-
 	}
 	
 	public String getServerIP()

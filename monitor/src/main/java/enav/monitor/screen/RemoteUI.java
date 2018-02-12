@@ -204,10 +204,10 @@ public class RemoteUI extends Application
 		tvPane = new StackPane();
 
 		// create another tabs
-		hPane = getHistory();
 		logPane = getLogTrace();
 		errPane = getErrorTrace();
-
+		hPane = getHistory();
+		
 		try
 		{
 			/* Applied FXML & CSS */
@@ -920,7 +920,7 @@ public class RemoteUI extends Application
 
 	private Pane getHistory()
 	{
-		history = new History();
+		history = new History(logTrace);
 		return history.buildPane();
 	}
 

@@ -9,12 +9,14 @@
 package enav.monitor.polling;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import enav.monitor.screen.ErrorTrace;
 import enav.monitor.screen.History;
 import enav.monitor.screen.LogTrace;
 import enav.monitor.screen.RemoteUI;
+import enav.monitor.screen.Trace;
 
 public class PollingManager
 {
@@ -102,5 +104,10 @@ public class PollingManager
 		client.addTrace(firstSession, lastSession, query);
 		
 		his.addClient(client);
+	}
+	
+	public Map<String, Client> getClientList()
+	{
+		return clients;
 	}
 }

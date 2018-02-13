@@ -8,6 +8,8 @@
 
 package enav.monitor.screen;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,25 +18,46 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 public class LogTrace
 {
 	private ObservableList<Trace> logs;
 	private VBox rPane;
 	private TableView<Trace> tableView;
+	private FileInputStream fis;
+	private String requester;
+	private TextField requesterTF;
+	private ObservableList<String> options;
+	private ComboBox comboBox;
 	
 	public LogTrace()
 	{
 		
 	}
 	
-	public void updateTable(List<Trace> traces)
+	public void updateTable(String requester, List<Trace> traces)
 	{
+		this.requester=requester;
+		requesterTF.setText(this.requester);
+		
+		options.add(requester);
+		
 		// initialize logs.
 		logs.clear();
 		
@@ -46,9 +69,12 @@ public class LogTrace
 
 	public Pane buildTablePane()
 	{
-		VBox rPane = new VBox();
-
+		rPane = new VBox(12);
+		rPane.setPadding(new Insets(20));
+		getLogTitle();
+		
 		tableView = new TableView<Trace>();
+		StackPane sPane=new StackPane(tableView);
 		// resultSet.getStylesheets().add("/css/???.css");
 
 		logs=FXCollections.observableArrayList();
@@ -78,8 +104,67 @@ public class LogTrace
 //		tableView.prefHeightProperty()
 //				.bind(Bindings.size(tableView.getItems()).multiply(tableView.getFixedCellSize()).add(25));
 
-		rPane.getChildren().add(tableView);
+		rPane.getChildren().add(sPane);
 		return rPane;
 	}
+	
+	private void getLogTitle()
+	{
+		HBox titlePane=new HBox(10);
+		
+		Image titleImage;
+		ImageView imageView = null;
+		try
+		{
+			fis = new FileInputStream("src/main/resources/images/trace.png");
+			titleImage = new Image(fis);
+			imageView = new ImageView(titleImage);
+			imageView.setFitHeight(30);
+			imageView.setFitWidth(30);
+			imageView.setPreserveRatio(true);
+			imageView.setTranslateY(-2);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		catch (NullPointerException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			if (fis != null)
+				try
+				{
+					fis.close();
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		
+		Label requesterLB=new Label("All Traces of Requester ");
+		requesterLB.setTextFill(Color.BURLYWOOD);
+		requesterLB.setFont(Font.font(16));
+		requesterTF=new TextField();
+		requesterTF.setEditable(false);
+		requesterTF.setFont(Font.font(16));
+		requesterTF.setStyle("-fx-text-fill: #dec85f;");
+		requesterTF.getStylesheets().add("/css/TextField.css");
+		requesterTF.setTranslateY(-2);
+		requesterTF.setAlignment(Pos.CENTER);
+		requesterTF.setPadding(new Insets(3));
+		
+		options = FXCollections.observableArrayList();
+		comboBox = new ComboBox(options);
+		comboBox.setPromptText("Select Requester");
+		comboBox.setTranslateX(605);
+		comboBox.getStylesheets().add("/css/ComboBox.css");
 
+		titlePane.getChildren().addAll(imageView, requesterLB, requesterTF, comboBox);
+		rPane.getChildren().add(titlePane);
+	}
 }

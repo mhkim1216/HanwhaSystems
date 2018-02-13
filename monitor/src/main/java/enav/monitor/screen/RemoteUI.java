@@ -1035,30 +1035,33 @@ public class RemoteUI extends Application
 		reqQueryText.setText(result[6]);
 
 		errTypeText.setText(result[7]);
+		errTypeText.setStyle("-fx-text-fill: burlywood;");
 		if (result[7].equals("No Error"))
 		{
 			errTypeText.setStyle("-fx-text-fill: #0e9b6c;");
 			errTypeText.setAlignment(Pos.CENTER);
 		}
-		if (result[7].length() > 15)
+		if (result[7].length() > 17)
 			errTypeText.setAlignment(Pos.CENTER_LEFT);
 
 		errNameText.setText(result[8]);
+		errNameText.setStyle("-fx-text-fill: burlywood;");
 		if (result[8].equals("No Error"))
 		{
 			errNameText.setStyle("-fx-text-fill: #0e9b6c;");
 			errNameText.setAlignment(Pos.CENTER);
 		}
-		if (result[8].length() > 15)
+		if (result[8].length() > 17)
 			errNameText.setAlignment(Pos.CENTER_LEFT);
 
 		errTimeText.setText(result[9]);
+		errTimeText.setStyle("-fx-text-fill: burlywood;");
 		if (result[9].equals("No Error"))
 		{
 			errTimeText.setStyle("-fx-text-fill: #0e9b6c;");
 			errTimeText.setAlignment(Pos.CENTER);
 		}
-		if (result[9].length() > 15)
+		if (result[9].length() > 17)
 			errTimeText.setAlignment(Pos.CENTER_LEFT);
 
 		Platform.runLater(new Runnable() {

@@ -180,7 +180,7 @@ public class History
 			{
 				public void handle(ActionEvent event)
 				{
-					logTrace.updateTable(
+					logTrace.updateTable(client.getName(),
 							PollingManager.getInstance().getClientList().get(client.getName()).getSqlList());
 				}
 			});
@@ -204,6 +204,10 @@ public class History
 			((TextField) aClient.getChildren().get(4)).setText(client.getUsingTime());
 			((TextField) aClient.getChildren().get(5)).setText(String.valueOf(client.getUsingCount()));
 			((TextField) aClient.getChildren().get(6)).setText(client.getQuery());
+			if (((TextField) aClient.getChildren().get(6)).getText().contains("No SQL"))
+				((TextField) aClient.getChildren().get(6)).setAlignment(Pos.CENTER);
+			else
+				((TextField) aClient.getChildren().get(6)).setAlignment(Pos.CENTER_LEFT);
 		}
 
 	}

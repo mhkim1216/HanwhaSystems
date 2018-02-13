@@ -1,0 +1,22 @@
+.combo-box-base 
+{
+    -fx-background-color: #1b221b;
+}
+
+.combo-box .list-cell 
+{
+    -fx-background-color: #1b221b;
+    -fx-text-fill: burlywood;
+    -fx-padding: 6 20 6 20;
+    -fx-alignment: CENTER;
+}
+
+.combo-box-popup .list-view
+{
+    -fx-background-color: #1b221b;
+}
+
+.combo-box .arrow-button
+{
+    -fx-background-color: #19332a;
+}

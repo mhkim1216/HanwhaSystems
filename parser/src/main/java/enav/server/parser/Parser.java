@@ -124,7 +124,7 @@ public class Parser
 		try
 		{
 			dspLog.setRequestor(rawString.split("RemoteIpAddress: ")[1].split("; SessionId: ")[0]);
-			// System.out.println(dspLog.getRequestor());
+//			System.out.println(dspLog.getRequestor());
 		}
 		catch (ArrayIndexOutOfBoundsException e)
 		{

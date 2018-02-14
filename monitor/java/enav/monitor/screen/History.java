@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import enav.monitor.polling.Client;
-import enav.monitor.polling.PollingManager;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -180,8 +179,7 @@ public class History
 			{
 				public void handle(ActionEvent event)
 				{
-					logTrace.updateTable(client.getName(),
-							PollingManager.getInstance().getClientList().get(client.getName()).getSqlList());
+					logTrace.updateTable(client);
 				}
 			});
 

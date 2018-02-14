@@ -11,13 +11,14 @@ package enav.monitor.screen;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import enav.monitor.polling.Client;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXMLLoader;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
@@ -44,27 +45,40 @@ public class LogTrace
 	private String requester;
 	private TextField requesterTF;
 	private ObservableList<String> options;
-	private ComboBox comboBox;
-	
+	private ComboBox<String> comboBox;
+	private Map<String, Client> clients;
+
 	public LogTrace()
 	{
-		
+		clients = new HashMap<String, Client>();
 	}
-	
-	public void updateTable(String requester, List<Trace> traces)
-	{
-		this.requester=requester;
-		requesterTF.setText(this.requester);
-		
-		options.add(requester);
-		
-		// initialize logs.
-		logs.clear();
-		
-		for(Trace trace:traces)
-			logs.add(trace);
 
-		tableView.setItems(logs);
+	public void updateTable(Client client)
+	{
+		try
+		{
+			requester = client.getName();
+			requesterTF.setText(this.requester);
+
+			if (!comboBox.getItems().contains(requester))
+				options.add(requester);
+
+//			comboBox.setItems(options);
+			comboBox.setValue(comboBox.getPromptText());
+			requesterTF.setText(requester);
+			// initialize logs.
+			logs.clear();
+
+			for (Trace trace : client.getSqlList())
+				logs.add(trace);
+
+			clients.put(requester, client);
+			tableView.setItems(logs);
+		}
+		catch (Exception e)
+		{
+
+		}
 	}
 
 	public Pane buildTablePane()
@@ -72,16 +86,17 @@ public class LogTrace
 		rPane = new VBox(12);
 		rPane.setPadding(new Insets(20));
 		getLogTitle();
-		
+
 		tableView = new TableView<Trace>();
-		StackPane sPane=new StackPane(tableView);
+		StackPane sPane = new StackPane(tableView);
 		// resultSet.getStylesheets().add("/css/???.css");
 
-		logs=FXCollections.observableArrayList();
-		
-		tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
-		tableView.setFixedCellSize(20.0);
+		logs = FXCollections.observableArrayList();
 
+		tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+		tableView.setFixedCellSize(20);
+		tableView.getStylesheets().add("/css/TableView.css");
+		
 		// Column setting
 		ArrayList<TableColumn<Trace, String>> column = new ArrayList<TableColumn<Trace, String>>();
 
@@ -89,29 +104,29 @@ public class LogTrace
 		column.add(new TableColumn<Trace, String>("Disconnected"));
 		column.add(new TableColumn<Trace, String>("Query"));
 
-		column.get(0).prefWidthProperty().bind(tableView.widthProperty().multiply(0.10));
-		column.get(1).prefWidthProperty().bind(tableView.widthProperty().multiply(0.10));
-		column.get(2).prefWidthProperty().bind(tableView.widthProperty().multiply(0.80));
+		column.get(0).prefWidthProperty().bind(tableView.widthProperty().multiply(0.12));
+		column.get(1).prefWidthProperty().bind(tableView.widthProperty().multiply(0.12));
+		column.get(2).prefWidthProperty().bind(tableView.widthProperty().multiply(0.757));
 
-		column.get(0).setCellValueFactory(new PropertyValueFactory<Trace,String>("FirstSession"));
-		column.get(1).setCellValueFactory(new PropertyValueFactory<Trace,String>("LastSession"));
-		column.get(2).setCellValueFactory(new PropertyValueFactory<Trace,String>("Sql"));
+		column.get(0).setCellValueFactory(new PropertyValueFactory<Trace, String>("FirstSession"));
+		column.get(1).setCellValueFactory(new PropertyValueFactory<Trace, String>("LastSession"));
+		column.get(2).setCellValueFactory(new PropertyValueFactory<Trace, String>("Sql"));
 		// column.get(i).setResizable(false);
 
 		tableView.getColumns().addAll(column);
-		
-//		tableView.setItems(logs);
-//		tableView.prefHeightProperty()
-//				.bind(Bindings.size(tableView.getItems()).multiply(tableView.getFixedCellSize()).add(25));
+
+		// tableView.setItems(logs);
+		// tableView.prefHeightProperty()
+		// .bind(Bindings.size(tableView.getItems()).multiply(tableView.getFixedCellSize()).add(25));
 
 		rPane.getChildren().add(sPane);
 		return rPane;
 	}
-	
+
 	private void getLogTitle()
 	{
-		HBox titlePane=new HBox(10);
-		
+		HBox titlePane = new HBox(10);
+
 		Image titleImage;
 		ImageView imageView = null;
 		try
@@ -145,11 +160,11 @@ public class LogTrace
 					e.printStackTrace();
 				}
 		}
-		
-		Label requesterLB=new Label("All Traces of Requester ");
+
+		Label requesterLB = new Label("All Traces of Requester ");
 		requesterLB.setTextFill(Color.BURLYWOOD);
 		requesterLB.setFont(Font.font(16));
-		requesterTF=new TextField();
+		requesterTF = new TextField();
 		requesterTF.setEditable(false);
 		requesterTF.setFont(Font.font(16));
 		requesterTF.setStyle("-fx-text-fill: #dec85f;");
@@ -157,12 +172,21 @@ public class LogTrace
 		requesterTF.setTranslateY(-2);
 		requesterTF.setAlignment(Pos.CENTER);
 		requesterTF.setPadding(new Insets(3));
-		
+
 		options = FXCollections.observableArrayList();
-		comboBox = new ComboBox(options);
+		comboBox = new ComboBox<String>(options);
 		comboBox.setPromptText("Select Requester");
 		comboBox.setTranslateX(605);
 		comboBox.getStylesheets().add("/css/ComboBox.css");
+		comboBox.setOnAction(new EventHandler<ActionEvent>()
+		{
+
+			public void handle(ActionEvent event)
+			{
+				if(!comboBox.getValue().equals(comboBox.getPromptText()))
+					updateTable(clients.get(comboBox.getValue()));
+			}
+		});
 
 		titlePane.getChildren().addAll(imageView, requesterLB, requesterTF, comboBox);
 		rPane.getChildren().add(titlePane);

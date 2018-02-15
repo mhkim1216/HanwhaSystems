@@ -37,9 +37,11 @@ public class History
 	private HBox aClient;
 	Map<String, HBox> clientList;
 	private LogTrace logTrace;
-
-	public History(LogTrace logTrace)
+	private RemoteUI rmt;
+	
+	public History(RemoteUI rmt, LogTrace logTrace)
 	{
+		this.rmt=rmt;
 		clientList = new HashMap<String, HBox>();
 		this.logTrace = logTrace;
 	}
@@ -180,6 +182,7 @@ public class History
 				public void handle(ActionEvent event)
 				{
 					logTrace.updateTable(client);
+					rmt.getTabPane().getSelectionModel().select(2);
 				}
 			});
 

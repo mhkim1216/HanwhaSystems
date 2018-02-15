@@ -154,9 +154,10 @@ class ParseThread extends Thread
 			}
 			catch (IOException e)
 			{
-				rmt.setDisconnected();
+//				rmt.setDisconnected();
 				e.printStackTrace();
-				break;
+				jsonString = new byte[32768];
+				continue;
 			}
 		}
 	}

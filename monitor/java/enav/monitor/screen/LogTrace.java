@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import enav.monitor.polling.Client;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -94,19 +95,21 @@ public class LogTrace
 		logs = FXCollections.observableArrayList();
 
 		tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
-		tableView.setFixedCellSize(20);
-		tableView.getStylesheets().add("/css/TableView.css");
-		
+		tableView.setFixedCellSize(25);
+		tableView.getStylesheets().add("/css/TableView_log.css");
+				
 		// Column setting
 		ArrayList<TableColumn<Trace, String>> column = new ArrayList<TableColumn<Trace, String>>();
-
+		
 		column.add(new TableColumn<Trace, String>("Connected"));
 		column.add(new TableColumn<Trace, String>("Disconnected"));
 		column.add(new TableColumn<Trace, String>("Query"));
 
 		column.get(0).prefWidthProperty().bind(tableView.widthProperty().multiply(0.12));
 		column.get(1).prefWidthProperty().bind(tableView.widthProperty().multiply(0.12));
-		column.get(2).prefWidthProperty().bind(tableView.widthProperty().multiply(0.757));
+		column.get(2).prefWidthProperty().bind(tableView.widthProperty().multiply(0.756));
+		
+		
 
 		column.get(0).setCellValueFactory(new PropertyValueFactory<Trace, String>("FirstSession"));
 		column.get(1).setCellValueFactory(new PropertyValueFactory<Trace, String>("LastSession"));
@@ -116,8 +119,8 @@ public class LogTrace
 		tableView.getColumns().addAll(column);
 
 		// tableView.setItems(logs);
-		// tableView.prefHeightProperty()
-		// .bind(Bindings.size(tableView.getItems()).multiply(tableView.getFixedCellSize()).add(25));
+		 tableView.prefHeightProperty()
+		 .bind(Bindings.size(tableView.getItems()).multiply(tableView.getFixedCellSize()).add(560));
 
 		rPane.getChildren().add(sPane);
 		return rPane;
@@ -132,7 +135,7 @@ public class LogTrace
 		try
 		{
 			fis = new FileInputStream("src/main/resources/images/trace.png");
-			titleImage = new Image(fis);
+			titleImage = new Image(fis); 
 			imageView = new ImageView(titleImage);
 			imageView.setFitHeight(30);
 			imageView.setFitWidth(30);

@@ -256,7 +256,7 @@ public class RemoteUI extends Application
 		rPane.setStyle("-fx-background-color: " + rootColor + ";");
 		MenuBar menuBar = new MenuBar();
 		menuBar.setStyle("-fx-background-color: " + rootColor + ";");
-		menuBar.setPadding(new Insets(0, 0, 0, 20));
+		menuBar.setPadding(new Insets(0, 0, 0, 13));
 		ArrayList<Menu> menus = new ArrayList<Menu>();
 		String[] menuList = new String[] { "File", "Home", "Edit", "Search", "Setting", "Window", "Help" };
 		Menu menu;
@@ -270,7 +270,7 @@ public class RemoteUI extends Application
 			menus.add(menu);
 		}
 		menuBar.getMenus().addAll(menus);
-		Label titleLabel = new Label("Remote Diagnostic System 0.1 ");
+		Label titleLabel = new Label("Remote Diagnostic System 0.7a ");
 
 		titleLabel.setOnMousePressed(new EventHandler<MouseEvent>()
 		{
@@ -356,9 +356,9 @@ public class RemoteUI extends Application
 		});
 		AnchorPane titleBarButtons = new AnchorPane();
 		AnchorPane.setTopAnchor(exitButton, 13.0);
-		AnchorPane.setLeftAnchor(exitButton, 840.0);
+		AnchorPane.setLeftAnchor(exitButton, 835.0);
 		AnchorPane.setTopAnchor(minButton, 13.0);
-		AnchorPane.setLeftAnchor(minButton, 816.0);
+		AnchorPane.setLeftAnchor(minButton, 811.0);
 		titleBarButtons.getChildren().add(exitButton);
 		titleBarButtons.getChildren().add(minButton);
 		titleBar.setPadding(new Insets(2, 10, 2, 10));
@@ -920,7 +920,7 @@ public class RemoteUI extends Application
 
 	private Pane getHistory()
 	{
-		history = new History(logTrace);
+		history = new History(this, logTrace);
 		return history.buildPane();
 	}
 
@@ -934,8 +934,13 @@ public class RemoteUI extends Application
 	private Pane getErrorTrace()
 	{
 		errorTrace = new ErrorTrace();
-		return new FlowPane();
+		return errorTrace.buildTablePane();
 
+	}
+	
+	public TabPane getTabPane()
+	{
+		return tPane;
 	}
 
 	public void setResourceStatus(double used, double total, String resource)

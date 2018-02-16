@@ -25,6 +25,7 @@ public class Client
 	private int usingCount;
 	private String query;
 	private List<Trace> sqlList;
+	private List<Error> errList;
 
 	public Client()
 	{

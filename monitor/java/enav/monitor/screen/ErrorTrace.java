@@ -1,3 +1,11 @@
+/**
+ * Created 02.16.2018.
+ * Last Modified 02.16.2018.
+ * Layout for error trace screen has been built using JavaFX.
+ * 
+ * 
+ */
+
 package enav.monitor.screen;
 
 import java.io.FileInputStream;
@@ -59,7 +67,7 @@ public class ErrorTrace
 //			comboBox.setItems(options);
 			comboBox.setValue(comboBox.getPromptText());
 			requesterTF.setText(requester);
-			// initialize logs.
+			// initialize errors.
 			errors.clear();
 
 			for (Trace trace : client.getSqlList())
@@ -78,7 +86,7 @@ public class ErrorTrace
 	{
 		rPane = new VBox(12);
 		rPane.setPadding(new Insets(20));
-		getLogTitle();
+		getErrorTitle();
 
 		tableView = new TableView<Trace>();
 		StackPane sPane = new StackPane(tableView);
@@ -88,7 +96,7 @@ public class ErrorTrace
 
 		tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 		tableView.setFixedCellSize(25);
-		tableView.getStylesheets().add("/css/TableView_log.css");
+		tableView.getStylesheets().add("/css/TableView.css");
 				
 		// Column setting
 		ArrayList<TableColumn<Trace, String>> column = new ArrayList<TableColumn<Trace, String>>();
@@ -109,7 +117,7 @@ public class ErrorTrace
 
 		tableView.getColumns().addAll(column);
 
-		// tableView.setItems(logs);
+		// tableView.setItems(errors);
 		 tableView.prefHeightProperty()
 		 .bind(Bindings.size(tableView.getItems()).multiply(tableView.getFixedCellSize()).add(560));
 
@@ -117,7 +125,7 @@ public class ErrorTrace
 		return rPane;
 	}
 	
-	private void getLogTitle()
+	private void getErrorTitle()
 	{
 		HBox titlePane = new HBox(10);
 
@@ -149,7 +157,6 @@ public class ErrorTrace
 				}
 				catch (IOException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 		}

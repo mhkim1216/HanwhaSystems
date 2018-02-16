@@ -1,29 +1,64 @@
+.root{
+    -fx-background-color: transparent;
+}
+
+.table-view{
+   -fx-background-color: transparent;
+   -fx-border-color: #292929;
+}
+
+.table-view:focused{
+    -fx-background-color: transparent;
+}
+
 .table-view .column-header {
-    -fx-background-color: #a0cda0;
-
+    -fx-background-color: transparent;
 }
 
-.table-row-cell:odd {
-    -fx-background-color: #e1f1e1;
+.table-view .column-header-background{
+    -fx-background-color: linear-gradient(#131313 0%, #353434 100%);
 }
+
+.table-view .column-header-background .label{
+    -fx-background-color: transparent;
+    -fx-text-fill: #69ab89;
+}
+
+.table-view .table-cell{
+    -fx-text-fill: #69ab89;
+}
+
+.table-row-cell{
+    -fx-background-color: #292929, #181818;
+    -fx-table-cell-border-color: #292929;
+}
+
+.table-row-cell:odd{
+    -fx-background-color: #292929, #181818;
+    -fx-table-cell-border-color: #292929;
+}
+
 
 .table-row-cell:selected {
-	-fx-selection-bar: #0a826a;
-	-fx-background-color: #0a826a;
+    -fx-background-color: #005797;
 }
 
+
 .thumb {
-	-fx-background-color: #62b364;
+	-fx-background-color: #131313;
 }
 
 .track {
-	-fx-background-color: #c8e9ca;
+	-fx-background-color: #353434;
 }
 
 .increment-button {
-	-fx-background-color: #62b364;
+	-fx-background-color: #131313;
+	-fx-background-insets: 0;
 }
 
  .decrement-button {
-	-fx-background-color: #62b364;
+	-fx-background-color: #131313;
+	-fx-background-insets: 0;
 }
+

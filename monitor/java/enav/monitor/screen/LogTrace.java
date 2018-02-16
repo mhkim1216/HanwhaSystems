@@ -96,7 +96,7 @@ public class LogTrace
 
 		tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 		tableView.setFixedCellSize(25);
-		tableView.getStylesheets().add("/css/TableView_log.css");
+		tableView.getStylesheets().add("/css/TableView.css");
 				
 		// Column setting
 		ArrayList<TableColumn<Trace, String>> column = new ArrayList<TableColumn<Trace, String>>();
@@ -159,7 +159,6 @@ public class LogTrace
 				}
 				catch (IOException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 		}

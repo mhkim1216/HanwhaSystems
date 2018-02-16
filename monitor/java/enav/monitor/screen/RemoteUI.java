@@ -516,7 +516,9 @@ public class RemoteUI extends Application
 	{
 		bPane = new BorderPane();
 		bPane.setMinWidth(1225);
+		bPane.setMaxWidth(1225);
 		bPane.setMinHeight(645);
+		bPane.setMaxHeight(645);	
 		bPane.setPadding(new Insets(5, 10, 0, 10));
 
 		VBox leftPane = new VBox();
@@ -640,6 +642,7 @@ public class RemoteUI extends Application
 
 		reqInfoLabel.setTextFill(Color.BURLYWOOD);
 		reqInfoLabel.setFont(new Font(15));
+		reqInfoLabel.setPadding(new Insets(0, 0, 12, 0));
 
 		Label reqLabel = new Label("· Requestor");
 		reqLabel.setTextFill(Color.WHITE);
@@ -755,7 +758,7 @@ public class RemoteUI extends Application
 	private void buildRightPane()
 	{
 		VBox rightPane = new VBox();
-		rightPane.setPadding(new Insets(10, 20, 20, 10));
+		rightPane.setPadding(new Insets(10, 15, 15, 10));
 
 		Label logTitle = new Label("[Server Logs]");
 		logTitle.setTextFill(Color.BURLYWOOD);
@@ -770,10 +773,10 @@ public class RemoteUI extends Application
 		Label statusTitle = new Label("[Server Status]");
 		statusTitle.setTextFill(Color.BURLYWOOD);
 		statusTitle.setFont(new Font(15));
-		statusTitle.setPadding(new Insets(15, 0, 10, 0));
+		statusTitle.setPadding(new Insets(30, 0, 10, 0));
 
 		HBox SVInfoPane = new HBox(10);
-		SVInfoPane.setPadding(new Insets(0, 10, 0, 0));
+		SVInfoPane.setPadding(new Insets(5, 5, 0, 0));
 		// Adding RAM usage of a server
 
 		ramGauge = GaugeBuilder.create().skinType(SkinType.SLIM).decimals(0).unit("MBYTE").title("USED").build();
@@ -815,12 +818,14 @@ public class RemoteUI extends Application
 		resultSet.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 		resultSet.setFixedCellSize(20.0);
 		resultSet.setStyle("-fx-font-size:10px;");
+		
 		ObservableList<ResultSet> data = FXCollections.observableArrayList();
 		data.add(new ResultSet());
 		data.add(new ResultSet());
 		data.add(new ResultSet());
 		data.add(new ResultSet());
 		data.add(new ResultSet());
+
 		ArrayList<TableColumn<ResultSet, String>> resultList = new ArrayList<TableColumn<ResultSet, String>>();
 		for (int i = 0; i < 37; ++i)
 		{
@@ -836,7 +841,7 @@ public class RemoteUI extends Application
 
 		Label bottomTitle = new Label("[Server Response Message]");
 		bottomTitle.setTextFill(Color.BURLYWOOD);
-		bottomTitle.setFont(new Font(14));
+		bottomTitle.setFont(new Font(15));
 		bottomTitle.setPadding(new Insets(0, 0, 0, 0));
 		// bottomTitle.setMinWidth(1225);
 		// bottomTitle.setAlignment(Pos.CENTER);
